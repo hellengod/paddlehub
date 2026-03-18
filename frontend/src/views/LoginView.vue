@@ -1,3 +1,7 @@
-<template><h1>Ola</h1></template>
-<script setup lang="ts"></script>
+<template>
+<LeftLoginSide></LeftLoginSide>
+</template>
+<script setup lang="ts">
+import LeftLoginSide from './LeftLoginSide.vue';
+</script>
 <style scoped></style>
