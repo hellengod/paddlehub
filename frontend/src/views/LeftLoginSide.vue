@@ -2,8 +2,8 @@
     <div class="container-left">
         <div class="content">
             <img src="/logo-paddlehub-grande.png" alt="" class="logo-grande">
-            <h1>Conecte rios, <br>pessoas e <span class="highlight">remadas</span></h1>
-            <h3>Descubra novos rios, registre suas experiências<br> e encontre outros remadores pleo caminho</h3>
+            <h1>Conecte rios, <br>pessoas e <span class="highlight">remadas.</span></h1>
+            <p>Descubra novos rios, registre suas experiências<br> e encontre outros remadores pleo caminho.</p>
         </div>
     </div>
 </template>
@@ -51,5 +51,10 @@ span {
 
 .highlight {
     color: rgb(34, 153, 113);
+}
+
+p{
+    font-size: 18px;
+
 }
 </style>
