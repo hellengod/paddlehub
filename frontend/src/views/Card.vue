@@ -1,20 +1,20 @@
 <template>
     <div class="container">
         <div class="icon">
-            <img :src= props.icon >
+            <img :src=props.icon>
         </div>
-        <div class="texcontent">
+        <div class="text-content">
             <p>{{ props.title }}</p>
         </div>
     </div>
 </template>
 <script setup lang="ts">
-    interface CardProps{
-        title: string;
-        icon: string;
-    }
+interface CardProps {
+    title: string;
+    icon: string;
+}
 
-    const props = defineProps<CardProps>();
+const props = defineProps<CardProps>();
 </script>
 <style scoped>
 .container {
@@ -28,6 +28,7 @@
     align-items: center;
     gap: 10px;
     padding: 5px;
+
 }
 
 .icon {
@@ -37,8 +38,12 @@
     border-radius: 7px;
 }
 
-img{
-        width: 40px;
+img {
+    width: 40px;
     height: 40px;
+}
+
+.text-content {
+    color: aliceblue;
 }
 </style>

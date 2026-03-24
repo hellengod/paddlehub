@@ -56,7 +56,7 @@ h1 {
 h1,
 span {
     font-weight: bold;
-    font-size: 45px;
+    font-size: 55px;
 
 }
 
@@ -65,7 +65,7 @@ span {
 }
 
 p {
-    font-size: 18px;
+    font-size: 20px;
 
 }
 
