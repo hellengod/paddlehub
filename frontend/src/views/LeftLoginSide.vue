@@ -10,9 +10,9 @@ import Card from './Card.vue';
             <h1>Conecte rios, <br>pessoas e <span class="highlight">remadas.</span></h1>
             <p>Descubra novos rios, registre suas experiências<br> e encontre outros remadores pleo caminho.</p>
             <div class="cards">
-                <card></card>
-                <card></card>
-                <card></card>
+                <Card title="Explore rios no mapa" icon="/map-pin-alt-svgrepo-com.svg"></Card>
+                <Card title="Compartilhe suas aventuras" icon="/camera-svgrepo-com.svg"></Card>
+                <Card title="Organize encontros" icon="/people-team-svgrepo-com.svg"></Card>
             </div>
 
         </div>
