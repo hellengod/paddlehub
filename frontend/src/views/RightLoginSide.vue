@@ -7,9 +7,16 @@
             </h1>
             <p>Que bom te ver por aqui!</p>
             </div>
+            <BaseInput label="E-mail"
+            type="email"
+            placeholder="seu@email.com"
+            />
         </div>
     </div>
 </template>
+<script setup lang="ts">
+import BaseInput from '@/components/base/BaseInput.vue';
+</script>
 
 <style scoped>
 .container-right {
