@@ -2,20 +2,42 @@
     <div class="container-right">
         <div class="login-card">
             <div class="text-container">
-            <h1>
-                Entrar na sua conta
-            </h1>
-            <p>Que bom te ver por aqui!</p>
+                <h1>
+                    Entrar na sua conta
+                </h1>
+                <p>Que bom te ver por aqui!</p>
             </div>
-            <BaseInput label="E-mail"
-            type="email"
-            placeholder="seu@email.com"
-            />
+            <BaseInput label="E-mail" type="email" placeholder="seu@email.com" v-model="email"
+                icon=".\letter-svgrepo-com.svg" />
+            <BaseInput label="Senha" type="password" placeholder="Digite sua senha" v-model="password"
+                icon=".\padlock-outlined-svgrepo-com.svg" />
+            <div class="login-actions">
+
+                <label class="remember-me">
+                    <input type="checkbox" />
+                    <span>Lembrar de mim</span>
+                </label>
+
+                <a href="">Esqueci minha senha</a>
+            </div>
+
+            <div class="submit-container">
+                <button class="submit">
+                    Entrar
+                    <img class="submit-icon" src="/arrow-sm-right-svgrepo-com.svg" />
+
+                </button>
+            </div>
+
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import BaseInput from '@/components/base/BaseInput.vue';
+import { ref } from 'vue';
+
+const email = ref('');
+const password = ref('');
 </script>
 
 <style scoped>
@@ -39,19 +61,62 @@ import BaseInput from '@/components/base/BaseInput.vue';
 
 }
 
-.text-container{
+.text-container {
     text-align: center;
     margin-bottom: 30px;
 }
 
-h1{
+h1 {
     color: aliceblue;
     font-size: 40px;
     margin-bottom: 10px;
     font-weight: 500;
 }
 
-p{
+p {
     font-size: 20px;
+}
+
+.login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px;
+    font-size: 18px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+}
+
+.remember-me input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: rgb(22, 99, 73);
+}
+
+.submit {
+    background-color: rgb(22, 99, 73);
+    color: aliceblue;
+    text-align: center;
+    height: 65px;
+    width: 100%;
+    border-radius: 10px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    justify-content: center;
+    border: 2px solid  rgb(20, 61, 47);
+    margin-top: 50px;
+}
+
+.submit-icon {
+    width: 30px;
+    position: absolute;
+    right: 15px;
 }
 </style>
