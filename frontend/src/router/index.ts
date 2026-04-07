@@ -8,6 +8,11 @@ const router = createRouter({
       name: 'login',
       component: LoginView,
     },
+    {
+      path:'/rivers',
+      name:'rivers',
+      component: () => import('../views/RiversView.vue'),
+    }
   ],
 })
 
