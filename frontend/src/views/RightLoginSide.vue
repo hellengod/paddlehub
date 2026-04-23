@@ -22,7 +22,7 @@
             </div>
 
             <div class="submit-container">
-                <button class="submit">
+                <button class="submit" @click="handleLogin">
                     Entrar
                     <img class="submit-icon" src="/arrow-sm-right-svgrepo-com.svg" />
 
@@ -41,9 +41,38 @@
 <script setup lang="ts">
 import BaseInput from '@/components/base/BaseInput.vue';
 import { ref } from 'vue';
+import useAuth from '@/composable/useAuth';
 
+const { login } = useAuth();
 const email = ref('');
 const password = ref('');
+const loading = ref(false);
+const errorMessage = ref('');
+
+async function handleLogin() {
+    errorMessage.value = '';
+    loading.value = true;
+
+    try {
+        const auth = await login(email.value, password.value)
+        console.log(auth)
+        localStorage.setItem('auth_token', auth.token)
+    }
+    catch (error) {
+
+        if (error instanceof Error) {
+            errorMessage.value = error.message
+        } else {
+            errorMessage.value = 'Nao foi possivel fazer login'
+        }
+
+
+    } finally {
+        loading.value = false;
+
+    }
+}
+
 </script>
 
 <style scoped>
@@ -139,18 +168,17 @@ p {
 }
 
 .cadastro {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  margin-top: 20px;
-  font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+    font-size: 15px;
 }
 
 .cadastro a {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
 }
-
 </style>
