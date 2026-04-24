@@ -1,17 +1,29 @@
+import type { LoginResponse } from "@/types/auth";
 export default function useAuth() {
-    async function login(email: string, password: string) {
-        const auth = await fetch("http://127.0.0.1:8000/api/login", {
+
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+    async function login(email: string, password: string): Promise<LoginResponse> {
+        const loginUrl = apiBaseUrl + "login"
+        const response = await fetch(loginUrl, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ email, password })
         })
-        const resposta = await auth.json()
-        if (!auth.ok) {
-            throw new Error(resposta.message)
+        const responseText = await response.text()
+        let responseData: LoginResponse
+
+        try {
+            responseData = JSON.parse(responseText)
+        } catch {
+            throw new Error('Resposta invalida do servidor')
         }
-        return resposta;
+
+        if (!response.ok) {
+            throw new Error(responseData.message)
+        }
+        return responseData;
 
     }
     return {

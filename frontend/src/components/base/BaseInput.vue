@@ -41,13 +41,13 @@ function handleInput(event: Event) {
   border-radius: 10px;
   border: 2px solid rgba(255, 255, 255, 0.123);
   font-size: 19px;
+  width: 100%;
+  padding-left: 48px;
+  color: aliceblue;
 }
 
 .input-wrapper {
   width: 100%;
-}
-
-.input-wrapper {
   position: relative;
   width: 100%;
 }
@@ -58,11 +58,6 @@ function handleInput(event: Event) {
   top: 50%;
   transform: translateY(-50%);
   width: 28px;
-}
-
-.input {
-  width: 100%;
-  padding-left: 48px;
 }
 
 label {

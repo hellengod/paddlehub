@@ -9,11 +9,22 @@ const router = createRouter({
       component: LoginView,
     },
     {
-      path:'/rivers',
-      name:'rivers',
+      path: '/rivers',
+      name: 'rivers',
       component: () => import('../views/RiversView.vue'),
+      meta: {
+        requiresAuth: true,
+      },
     }
   ],
+})
+router.beforeEach((to) => {
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+  const token = localStorage.getItem('auth_token')
+
+  if (requiresAuth && !token) {
+    return { name: 'login' }
+  }
 })
 
 export default router

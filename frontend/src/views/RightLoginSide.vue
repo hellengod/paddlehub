@@ -1,6 +1,6 @@
 <template>
     <div class="container-right">
-        <div class="login-card">
+        <form class="login-card" @submit.prevent="handleLogin">
             <div class="text-container">
                 <h1>
                     Entrar na sua conta
@@ -11,6 +11,9 @@
                 icon=".\letter-svgrepo-com.svg" />
             <BaseInput label="Senha" type="password" placeholder="Digite sua senha" v-model="password"
                 icon=".\padlock-outlined-svgrepo-com.svg" />
+                <span v-if="errorMessage" class="error">
+                    {{ errorMessage }}
+                </span>
             <div class="login-actions">
 
                 <label class="remember-me">
@@ -22,8 +25,8 @@
             </div>
 
             <div class="submit-container">
-                <button class="submit" @click="handleLogin">
-                    Entrar
+                <button class="submit" :disabled="loading" type="submit">
+                    {{loading ? 'Entrando...' : 'Entrar'}}
                     <img class="submit-icon" src="/arrow-sm-right-svgrepo-com.svg" />
 
                 </button>
@@ -35,28 +38,31 @@
 
             </div>
 
-        </div>
+        </form>
     </div>
 </template>
 <script setup lang="ts">
 import BaseInput from '@/components/base/BaseInput.vue';
 import { ref } from 'vue';
 import useAuth from '@/composable/useAuth';
+import { useRouter } from 'vue-router';
 
 const { login } = useAuth();
 const email = ref('');
 const password = ref('');
 const loading = ref(false);
 const errorMessage = ref('');
-
+const router = useRouter();
+ 
 async function handleLogin() {
     errorMessage.value = '';
     loading.value = true;
 
     try {
         const auth = await login(email.value, password.value)
-        console.log(auth)
         localStorage.setItem('auth_token', auth.token)
+        void router.push({ name: 'rivers' });
+
     }
     catch (error) {
 
@@ -180,5 +186,9 @@ p {
     display: flex;
     align-items: center;
     text-decoration: none;
+}
+
+.error{
+    color: darkred;
 }
 </style>
