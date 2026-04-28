@@ -30,17 +30,17 @@ function handleInput(event: Event) {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-bottom: 30px;
-  font-size: 25px;
+  padding-bottom: 18px;
+  font-size: 21px;
 
 }
 
 .input {
-  height: 60px;
+  height: 54px;
   background-color: transparent;
   border-radius: 10px;
   border: 2px solid rgba(255, 255, 255, 0.123);
-  font-size: 19px;
+  font-size: 17px;
   width: 100%;
   padding-left: 48px;
   color: aliceblue;

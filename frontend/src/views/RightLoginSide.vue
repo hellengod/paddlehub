@@ -92,37 +92,35 @@ async function handleLogin() {
 }
 
 .login-card {
-    width: 100%;
-    max-width: 600px;
-    padding: 50px;
+    width: min(100%, 520px);
+    padding: 36px;
     border-radius: 15px;
     background: rgba(33, 86, 109, 0.096);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(69, 199, 255, 0.096);
-
 }
 
 .text-container {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
 }
 
 h1 {
     color: aliceblue;
-    font-size: 40px;
+    font-size: 34px;
     margin-bottom: 10px;
     font-weight: 500;
 }
 
 p {
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .login-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 15px;
+    margin: 12px 0;
     font-size: 18px;
 }
 
@@ -152,7 +150,7 @@ p {
     position: relative;
     justify-content: center;
     border: 2px solid rgb(20, 61, 47);
-    margin-top: 50px;
+    margin-top: 32px;
 }
 
 .submit-icon {
@@ -169,7 +167,7 @@ p {
 .divider {
     width: 100%;
     height: 1px;
-    margin-top: 60px;
+    margin-top: 36px;
     background-color: rgba(255, 255, 255, 0.12);
 }
 
