@@ -11,9 +11,9 @@
                 icon=".\letter-svgrepo-com.svg" />
             <BaseInput label="Senha" type="password" placeholder="Digite sua senha" v-model="password"
                 icon=".\padlock-outlined-svgrepo-com.svg" />
-                <span v-if="errorMessage" class="error">
-                    {{ errorMessage }}
-                </span>
+            <span v-if="errorMessage" class="error">
+                {{ errorMessage }}
+            </span>
             <div class="login-actions">
 
                 <label class="remember-me">
@@ -26,7 +26,7 @@
 
             <div class="submit-container">
                 <button class="submit" :disabled="loading" type="submit">
-                    {{loading ? 'Entrando...' : 'Entrar'}}
+                    {{ loading ? 'Entrando...' : 'Entrar' }}
                     <img class="submit-icon" src="/arrow-sm-right-svgrepo-com.svg" />
 
                 </button>
@@ -53,7 +53,7 @@ const password = ref('');
 const loading = ref(false);
 const errorMessage = ref('');
 const router = useRouter();
- 
+
 async function handleLogin() {
     errorMessage.value = '';
     loading.value = true;
@@ -153,6 +153,11 @@ p {
     margin-top: 32px;
 }
 
+.submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .submit-icon {
     width: 30px;
     position: absolute;
@@ -186,7 +191,7 @@ p {
     text-decoration: none;
 }
 
-.error{
+.error {
     color: darkred;
 }
 </style>
