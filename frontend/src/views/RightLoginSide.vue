@@ -1,6 +1,6 @@
 <template>
     <div class="container-right">
-        <div class="login-card">
+        <form class="login-card" @submit.prevent="handleLogin">
             <div class="text-container">
                 <h1>
                     Entrar na sua conta
@@ -11,6 +11,9 @@
                 icon=".\letter-svgrepo-com.svg" />
             <BaseInput label="Senha" type="password" placeholder="Digite sua senha" v-model="password"
                 icon=".\padlock-outlined-svgrepo-com.svg" />
+            <span v-if="errorMessage" class="error">
+                {{ errorMessage }}
+            </span>
             <div class="login-actions">
 
                 <label class="remember-me">
@@ -22,8 +25,8 @@
             </div>
 
             <div class="submit-container">
-                <button class="submit">
-                    Entrar
+                <button class="submit" :disabled="loading" type="submit">
+                    {{ loading ? 'Entrando...' : 'Entrar' }}
                     <img class="submit-icon" src="/arrow-sm-right-svgrepo-com.svg" />
 
                 </button>
@@ -35,15 +38,47 @@
 
             </div>
 
-        </div>
+        </form>
     </div>
 </template>
 <script setup lang="ts">
 import BaseInput from '@/components/base/BaseInput.vue';
 import { ref } from 'vue';
+import useAuth from '@/composable/useAuth';
+import { useRouter } from 'vue-router';
 
+const { login } = useAuth();
 const email = ref('');
 const password = ref('');
+const loading = ref(false);
+const errorMessage = ref('');
+const router = useRouter();
+
+async function handleLogin() {
+    errorMessage.value = '';
+    loading.value = true;
+
+    try {
+        const auth = await login(email.value, password.value)
+        localStorage.setItem('auth_token', auth.token)
+        void router.push({ name: 'rivers' });
+
+    }
+    catch (error) {
+
+        if (error instanceof Error) {
+            errorMessage.value = error.message
+        } else {
+            errorMessage.value = 'Nao foi possivel fazer login'
+        }
+
+
+    } finally {
+        loading.value = false;
+
+    }
+}
+
 </script>
 
 <style scoped>
@@ -57,37 +92,35 @@ const password = ref('');
 }
 
 .login-card {
-    width: 100%;
-    max-width: 600px;
-    padding: 50px;
+    width: min(100%, 520px);
+    padding: 36px;
     border-radius: 15px;
     background: rgba(33, 86, 109, 0.096);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(69, 199, 255, 0.096);
-
 }
 
 .text-container {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
 }
 
 h1 {
     color: aliceblue;
-    font-size: 40px;
+    font-size: 34px;
     margin-bottom: 10px;
     font-weight: 500;
 }
 
 p {
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .login-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 15px;
+    margin: 12px 0;
     font-size: 18px;
 }
 
@@ -117,7 +150,12 @@ p {
     position: relative;
     justify-content: center;
     border: 2px solid rgb(20, 61, 47);
-    margin-top: 50px;
+    margin-top: 32px;
+}
+
+.submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .submit-icon {
@@ -134,23 +172,26 @@ p {
 .divider {
     width: 100%;
     height: 1px;
-    margin-top: 60px;
+    margin-top: 36px;
     background-color: rgba(255, 255, 255, 0.12);
 }
 
 .cadastro {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  margin-top: 20px;
-  font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+    font-size: 15px;
 }
 
 .cadastro a {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
 }
 
+.error {
+    color: darkred;
+}
 </style>
