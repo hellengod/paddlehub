@@ -1,4 +1,4 @@
-import type { LoginResponse } from "@/types/auth";
+import type { LoginResponse, LogoutResponse } from "@/types/auth";
 export default function useAuth() {
 
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -53,12 +53,48 @@ export default function useAuth() {
             return false;
         }
 
-        if(!response.ok)return false 
+        if (!response.ok) return false
 
         return true;
     }
+
+    async function logout(): Promise<LogoutResponse> {
+        const token = localStorage.getItem('auth_token')
+        if (!token) {
+            throw new Error("Usuario nao autenticado")
+        }
+        const logoutUrl = apiBaseUrl + "logout"
+        let response: Response;
+        try {
+            response = await fetch(logoutUrl, {
+                method: "POST",
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+        } catch {
+            throw new Error("Nao foi possivel se conectar ao servidor")
+        }
+        const responseText = await response.text()
+        let responseData: LogoutResponse;
+
+        try {
+            responseData = JSON.parse(responseText)
+        } catch {
+            throw new Error('Resposta invalida do servidor')
+        }
+
+        if (!response.ok) {
+            throw new Error(responseData.message)
+        }
+        localStorage.removeItem('auth_token')
+
+        return responseData;
+
+    }
     return {
         login,
-        validateToken
+        validateToken,
+        logout
     }
 }
