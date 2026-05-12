@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginView from '@/views/LoginView.vue'
+import AuthView from '@/views/AuthView.vue'
 import useAuth from '@/composable/useAuth'
 
 const { validateToken } = useAuth();
@@ -9,7 +9,20 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      component: LoginView,
+      component: AuthView,
+      meta: {
+        authMode: 'login',
+        guestOnly: true,
+      },
+    },
+    {
+      path: '/cadastro',
+      name: 'register',
+      component: AuthView,
+      meta: {
+        authMode: 'register',
+        guestOnly: true,
+      },
     },
     {
       path: '/rivers',
@@ -23,17 +36,18 @@ const router = createRouter({
 })
 router.beforeEach(async (to) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+  const guestOnly = to.matched.some((record) => record.meta.guestOnly)
   const isAuthenticated = await validateToken()
-  const isLoginRoute = to.name === 'login'
 
   if (requiresAuth && !isAuthenticated) {
     return { name: 'login' }
   }
 
-  if (isLoginRoute && isAuthenticated) {
+  if (guestOnly && isAuthenticated) {
     return { name: 'rivers' }
   }
 })
+
 
 
 export default router

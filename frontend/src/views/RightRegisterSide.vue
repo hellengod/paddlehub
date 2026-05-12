@@ -1,16 +1,20 @@
 <template>
     <div class="container-right">
-        <form class="login-card" @submit.prevent="handleLogin">
+        <form class="login-card">
             <div class="text-container">
                 <h1>
-                    Entrar na sua conta
+                    Crie sua conta
                 </h1>
-                <p>Que bom te ver por aqui!</p>
+                <p>Vamos comecar a sua jornada conosco</p>
             </div>
+            <BaseInput label="Nome" type="text" placeholder="Seu nome completo" v-model="nome"
+                icon="./user-svgrepo-com.svg" />
             <BaseInput label="E-mail" type="email" placeholder="seu@email.com" v-model="email"
                 icon=".\letter-svgrepo-com.svg" />
             <BaseInput label="Senha" type="password" placeholder="Digite sua senha" v-model="password"
                 icon=".\padlock-outlined-svgrepo-com.svg" />
+            <BaseInput label="Confirmar Senha" type="password" placeholder="Confirme sua senha"
+                v-model="passwordConfirm" icon=".\padlock-outlined-svgrepo-com.svg" />
             <span v-if="errorMessage" class="error">
                 {{ errorMessage }}
             </span>
@@ -18,21 +22,21 @@
 
                 <label class="remember-me">
                     <input type="checkbox" />
-                    <span>Lembrar de mim</span>
+                    <span>Aceito os termos e condicoes</span>
                 </label>
 
-                <a href="">Esqueci minha senha</a>
+
             </div>
 
             <div class="submit-container">
                 <button class="submit" :disabled="loading" type="submit">
-                    {{ loading ? 'Entrando...' : 'Entrar' }}
+                    {{ loading ? 'Cadastrando...' : 'Cadastrar' }}
                     <img class="submit-icon" src="/arrow-sm-right-svgrepo-com.svg" />
 
                 </button>
                 <div class="divider"></div>
-                <div class="cadastro"> <span>Nao tem uma conta?</span>
-                    <router-link to="/cadastro">Criar conta <img src="/arrow-green.svg" class="link-icon"></router-link>
+                <div class="cadastro"> <span>Ja tem uma conta?</span>
+                    <router-link to="/">Entrar <img src="/arrow-green.svg" class="link-icon"></router-link>
                 </div>
 
 
@@ -44,40 +48,14 @@
 <script setup lang="ts">
 import BaseInput from '@/components/base/BaseInput.vue';
 import { ref } from 'vue';
-import useAuth from '@/composable/useAuth';
 import { useRouter } from 'vue-router';
 
-const { login } = useAuth();
+const nome = ref('');
 const email = ref('');
 const password = ref('');
+const passwordConfirm = ref('');
 const loading = ref(false);
 const errorMessage = ref('');
-const router = useRouter();
-
-async function handleLogin() {
-    errorMessage.value = '';
-    loading.value = true;
-
-    try {
-        const auth = await login(email.value, password.value)
-        localStorage.setItem('auth_token', auth.token)
-        void router.push({ name: 'rivers' });
-
-    }
-    catch (error) {
-
-        if (error instanceof Error) {
-            errorMessage.value = error.message
-        } else {
-            errorMessage.value = 'Nao foi possivel fazer login'
-        }
-
-
-    } finally {
-        loading.value = false;
-
-    }
-}
 
 </script>
 
@@ -87,13 +65,16 @@ async function handleLogin() {
     width: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     background-color: #08161c;
+    padding: 24px 0;
 }
 
+
 .login-card {
-    width: min(100%, 520px);
-    padding: 36px;
+    width: min(100%, 500px);
+    height: max-content;
+    padding: 25px;
     border-radius: 15px;
     background: rgba(33, 86, 109, 0.096);
     backdrop-filter: blur(10px);
@@ -194,4 +175,17 @@ p {
 .error {
     color: darkred;
 }
+
+@media (max-height: 800px) {
+    .container-right {
+        align-items: flex-start;
+        padding: 24px 0;
+    }
+
+    .login-card {
+        margin: 24px 0;
+        padding: 24px;
+    }
+}
+
 </style>
