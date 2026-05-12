@@ -15,7 +15,7 @@ Além do produto em si, o foco principal do projeto é o **desenvolvimento de au
 
 ## 🧠 Motivação técnica
 Este projeto está sendo desenvolvido com as seguintes diretrizes:
-- Código escrito **sem auxílio de IA**
+- Código escrito 
 - Uso de documentação oficial e debug manual
 - IA utilizada apenas para **review e validação**
 - Organização do trabalho em **sprints** usando GitHub Projects
