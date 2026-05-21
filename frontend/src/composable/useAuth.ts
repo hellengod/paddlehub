@@ -1,4 +1,4 @@
-import type { LoginResponse, LogoutResponse } from "@/types/auth";
+import type { LoginResponse, LogoutResponse, RegisterResponse } from "@/types/auth";
 export default function useAuth() {
 
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -92,9 +92,40 @@ export default function useAuth() {
         return responseData;
 
     }
+
+    async function register(name: string, email: string, password: string, password_confirmation: string) {
+        const registerUrl = apiBaseUrl + "register"
+        let response: Response;
+        try {
+            response = await fetch(registerUrl, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, password, password_confirmation })
+            })
+        } catch {
+            throw new Error("Nao foi possivel se conectar ao servidor")
+        }
+        const responseText = await response.text()
+        let responseData: RegisterResponse
+
+        try {
+            responseData = JSON.parse(responseText)
+        } catch {
+            throw new Error('Resposta invalida do servidor')
+        }
+
+        if (!response.ok) {
+            throw new Error(responseData.message)
+        }
+        return responseData;
+
+    }
     return {
         login,
         validateToken,
-        logout
+        logout,
+        register
     }
 }
