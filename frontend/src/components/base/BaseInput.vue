@@ -14,7 +14,7 @@ interface BaseInputProps {
   type: string;
   placeholder: string;
   modelValue: string;
-  icon: string
+  icon?: string
 }
 
 const props = defineProps<BaseInputProps>();

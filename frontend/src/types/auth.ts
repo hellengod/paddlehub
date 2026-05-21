@@ -1,15 +1,19 @@
-export interface LoginResponse{
+export interface LoginResponse {
     message: string,
     token: string,
     user: User,
 }
 
-export interface User{
+export interface User {
     id: number,
     email: string,
     name: string
 }
 
-export interface LogoutResponse{
+export interface LogoutResponse {
+    message: string,
+}
+
+export interface RegisterResponse {
     message: string,
 }
