@@ -156,8 +156,8 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN'),
-
+    'domain' => '.domain.com',
+    
     /*
     |--------------------------------------------------------------------------
     | HTTPS Only Cookies

@@ -59,8 +59,7 @@ async function handleLogin() {
     loading.value = true;
 
     try {
-        const auth = await login(email.value, password.value)
-        localStorage.setItem('auth_token', auth.token)
+        await login(email.value, password.value)
         void router.push({ name: 'rivers' });
 
     }
