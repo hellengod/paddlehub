@@ -15,16 +15,18 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials) === false) {
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+        } else {
             return response()->json([
                 'message' => "Usuario nao autenticado",
             ], 401);
         }
+
         $user = Auth::user();
-        $token = $user->createToken('token');
         return response()->json([
             'message' => "Login realizado com sucesso",
-            'token' => $token->plainTextToken,
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -36,7 +38,10 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
 
-        $request->user()->currentAccessToken()->delete();
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
         return response()->json([
             'message' => "Logout realizado com sucesso",
         ]);
@@ -47,13 +52,13 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' =>  ['required', 'min:6','confirmed'],
+            'password' => ['required', 'min:6', 'confirmed'],
         ]);
 
         User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' =>$validated['password']
+            'password' => $validated['password']
         ]);
         return response()->json([
             'message' => "Cadastro realizado com sucesso"
