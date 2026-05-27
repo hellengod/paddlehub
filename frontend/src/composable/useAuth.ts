@@ -9,17 +9,22 @@ export default function useAuth() {
     async function login(email: string, password: string): Promise<LoginResponse> {
         await initializeCsrf();
 
-        const response = await apiClient.post('/login', {
-            "email": email,
-            "password": password
-        });
+        try {
+            const response = await apiClient.post('api/login', {
+                "email": email,
+                "password": password
+            });
 
-        return response.data;
+            return response.data;
+        } catch {
+            throw new Error("Nao foi possivel realizar o login")
+        }
+
     }
 
     async function validateToken() {
         try {
-            await apiClient.get('/user');
+            await apiClient.get('api/user');
             return true;
 
         } catch {
@@ -29,7 +34,7 @@ export default function useAuth() {
 
     async function logout(): Promise<LogoutResponse> {
         try {
-            const response = await apiClient.post('/logout');
+            const response = await apiClient.post('api/logout');
             return response.data
 
         } catch {
@@ -38,32 +43,19 @@ export default function useAuth() {
     }
 
     async function register(name: string, email: string, password: string, password_confirmation: string) {
-        const registerUrl = apiBaseUrl + "register"
-        let response: Response;
+        await initializeCsrf();
         try {
-            response = await fetch(registerUrl, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, email, password, password_confirmation })
-            })
-        } catch {
-            throw new Error("Nao foi possivel se conectar ao servidor")
-        }
-        const responseText = await response.text()
-        let responseData: RegisterResponse
+            const response = await apiClient.post('api/register', {
+                "name": name,
+                "email": email,
+                "password": password,
+                "password_confirmation": password_confirmation
+            });
 
-        try {
-            responseData = JSON.parse(responseText)
+            return response.data;
         } catch {
-            throw new Error('Resposta invalida do servidor')
+            throw new Error("Nao foi possivel realizar o cadastro")
         }
-
-        if (!response.ok) {
-            throw new Error(responseData.message)
-        }
-        return responseData;
 
     }
     return {

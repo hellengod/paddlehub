@@ -5,6 +5,7 @@ const apiClient = axios.create({
   withCredentials: true,
   xsrfCookieName: 'XSRF-TOKEN',
   xsrfHeaderName: 'X-XSRF-TOKEN',
+  withXSRFToken: true
 });
 
 export default apiClient;
