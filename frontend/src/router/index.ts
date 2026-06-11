@@ -25,9 +25,9 @@ const router = createRouter({
       },
     },
     {
-      path: '/rivers',
-      name: 'rivers',
-      component: () => import('../views/RiversView.vue'),
+      path: '/home',
+      name: 'home',
+      component: () => import('../views/HomeView.vue'),
       meta: {
         requiresAuth: true,
       },
@@ -44,7 +44,7 @@ router.beforeEach(async (to) => {
   }
 
   if (guestOnly && isAuthenticated) {
-    return { name: 'rivers' }
+    return { name: 'home' }
   }
 })
 

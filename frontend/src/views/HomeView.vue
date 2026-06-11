@@ -1,17 +1,16 @@
 <template>
-    <div>
-        <h1>Rios</h1>
-        <p>Em construcao</p>
-        <button @click="handleLogout" :disabled="loading" class="logout-button">
+    <AppLayout>
+ <button @click="handleLogout" :disabled="loading" class="logout-button">
             {{ loading ? 'Saindo...' : 'Logout' }}
         </button>
         <span v-if="errorMessage" class="error">
             {{ errorMessage }}
         </span>
-    </div>
+    </AppLayout>
 </template>
 
 <script lang="ts" setup>
+import AppLayout from '@/components/layouts/AppLayout.vue';
 import useAuth from '@/composable/useAuth';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';

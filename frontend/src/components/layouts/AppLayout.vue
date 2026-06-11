@@ -1,16 +1,29 @@
 <template>
-    <div class="header">
-        <h1>PaddleHub</h1>
-        <nav>
-            <RouterLink to="/">Home</RouterLink>
-            <RouterLink to="/rivers">Rios</RouterLink>
-        </nav>
-    </div>
-    <div class="body">
-        <slot></slot>
+    <div class="layout-shell">
+        <div class="aside">
+            <p>ola</p>
+        </div>
+        <div class="main">
+            <slot></slot>
+        </div>
     </div>
 </template>
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 </script>
-<style></style>
+<style scoped>
+.layout-shell {
+    display: flex;
+    min-height: 100vh
+}
+
+.aside {
+    width: 300px;
+    background-color: aqua;
+}
+
+.main {
+    background-color: blueviolet;
+    flex: 1;
+}
+</style>
