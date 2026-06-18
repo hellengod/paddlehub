@@ -31,6 +31,30 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
       },
+    },
+    {
+      path: '/mapa',
+      name: 'mapa',
+      component: () => import('../views/MapView.vue'),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/eventos',
+      name: 'eventos',
+      component: () => import('../views/EventView.vue'),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/rios',
+      name: 'rios',
+      component: () => import('../views/RiverView.vue'),
+      meta: {
+        requiresAuth: true,
+      },
     }
   ],
 })
