@@ -2,7 +2,7 @@
     <div class="layout-shell">
         <SideBar></SideBar>
         <div class="main">
-            <slot></slot>
+           <RouterView></RouterView>
         </div>
     </div>
 
