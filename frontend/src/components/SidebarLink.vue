@@ -4,7 +4,7 @@
             <component :is="props.icon" />
         </div>
         <div class="text">
-            {{ props.name }}
+            {{ props.label }}
         </div>
     </router-link>
 
@@ -15,7 +15,7 @@ import type { Component } from 'vue'
 interface SidebarLink {
     icon: Component,
     to: string,
-    name: string
+    label: string
 }
 
 const props = defineProps<SidebarLink>();

@@ -7,7 +7,7 @@
         <nav class="sidebar-nav">
             <ul>
                 <li v-for="item in menuItems" :key="item.to">
-                    <SidebarLink :icon="item.icon" :to="item.to" :name="item.label"></SidebarLink>
+                    <SidebarLink :icon="item.icon" :to="item.to" :label="item.label"></SidebarLink>
                 </li>
             </ul>
         </nav>
