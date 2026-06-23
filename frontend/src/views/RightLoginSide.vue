@@ -60,7 +60,7 @@ async function handleLogin() {
 
     try {
         await login(email.value, password.value)
-        void router.push({ name: 'rivers' });
+        void router.push({ name: 'home' });
 
     }
     catch (error) {

@@ -1,16 +1,25 @@
 <template>
-    <div class="header">
-        <h1>PaddleHub</h1>
-        <nav>
-            <RouterLink to="/">Home</RouterLink>
-            <RouterLink to="/rivers">Rios</RouterLink>
-        </nav>
+    <div class="layout-shell">
+        <SideBar></SideBar>
+        <div class="main">
+           <RouterView></RouterView>
+        </div>
     </div>
-    <div class="body">
-        <slot></slot>
-    </div>
+
 </template>
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import SideBar from '@/components/layouts/SideBar.vue';
+
 </script>
-<style></style>
+<style scoped>
+.layout-shell {
+    display: flex;
+    min-height: 100vh;
+    background: rgba(33, 86, 109, 0.096);
+}
+
+.main {
+    /* background-color: blueviolet; */
+    flex: 1;
+}
+</style>
