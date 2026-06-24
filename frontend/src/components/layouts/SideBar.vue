@@ -35,6 +35,7 @@ import MapIcon from '../icons/MapIcon.vue';
 import EventIcon from '../icons/EventIcon.vue';
 import RiverIcon from '../icons/RiverIcon.vue';
 import LogoutIcon from '../icons/LogoutIcon.vue';
+import CommunityIcon from '../icons/CommunityIcon.vue';
 
 const loading = ref(false);
 const errorMessage = ref('');
@@ -62,6 +63,11 @@ const menuItems = [
         icon: RiverIcon,
         to: 'rios',
         label: 'Rios',
+    },
+    {
+        icon: CommunityIcon,
+        to: 'rios',
+        label: 'Comunidade',
     },
 ]
 
