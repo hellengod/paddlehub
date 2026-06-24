@@ -66,7 +66,7 @@ const menuItems = [
     },
     {
         icon: CommunityIcon,
-        to: 'rios',
+        to: 'community',
         label: 'Comunidade',
     },
 ]
