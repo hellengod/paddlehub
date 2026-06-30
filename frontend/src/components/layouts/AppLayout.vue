@@ -1,22 +1,30 @@
 <template>
-    <div class="layout-shell">
-        <SideBar></SideBar>
-        <div class="main">
-           <RouterView></RouterView>
+    <div class="layout-all">
+        <div class="layout-shell">
+            <SideBar></SideBar>
+            <div class="main">
+                <RouterView></RouterView>
+            </div>
         </div>
     </div>
-
 </template>
 <script setup lang="ts">
 import SideBar from '@/components/layouts/SideBar.vue';
 
 </script>
 <style scoped>
-.layout-shell {
+.layout-all {
     display: flex;
     min-height: 100vh;
-    background: rgba(33, 86, 109, 0.096);
+    background: #010a12;
+    padding: 10px;
+
+    .layout-shell {
+        display: flex;
+        gap: 5px;
+    }
 }
+
 
 .main {
     /* background-color: blueviolet; */
