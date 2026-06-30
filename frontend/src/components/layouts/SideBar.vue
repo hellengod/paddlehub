@@ -1,7 +1,7 @@
 <template>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="\public\logo-paddlehub-grande.png" alt="Logo" class="logo">
+            <img src="/logo-paddlehub-grande.png" alt="Logo" class="logo">
         </div>
 
         <nav class="sidebar-nav">
@@ -13,6 +13,14 @@
         </nav>
 
         <div class="sidebar-footer">
+            <div class="perfil">
+                <SidebarProfileCard
+                    name="Hellen Bianchini"
+                    location="Rio Juquia, SP"
+                    avatar-url="/profile-user.svg"
+                    route-name="perfil"
+                ></SidebarProfileCard>
+            </div>
             <button @click="handleLogout" :disabled="loading" class="logout-button">
                 <span class="logout-icon" aria-hidden="true">
                     <LogoutIcon></LogoutIcon>
@@ -26,16 +34,18 @@
         </div>
     </aside>
 </template>
-<script setup lang="ts">import useAuth from '@/composable/useAuth';
+<script setup lang="ts">
+import useAuth from '@/composable/useAuth';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router'
-import SidebarLink from '../SidebarLink.vue';
+import SidebarLink from '../sidebar/SidebarLink.vue';
 import HomeIcon from '../icons/HomeIcon.vue';
 import MapIcon from '../icons/MapIcon.vue';
 import EventIcon from '../icons/EventIcon.vue';
 import RiverIcon from '../icons/RiverIcon.vue';
 import LogoutIcon from '../icons/LogoutIcon.vue';
 import CommunityIcon from '../icons/CommunityIcon.vue';
+import SidebarProfileCard from '../sidebar/SidebarProfileCard.vue';
 
 const loading = ref(false);
 const errorMessage = ref('');
@@ -181,6 +191,9 @@ async function handleLogout() {
 
 .sidebar-footer {
     margin-top: auto;
-    padding: 10px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 15px;
 }
 </style>
