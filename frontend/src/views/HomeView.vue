@@ -1,6 +1,6 @@
 <template>
     <section class="imagem-background">
-        <img src="/img-fundo-home.png" alt="Imagem de fundo" />
+        <img src="/imagem-fundo.png" alt="Imagem de fundo" />
     </section>
 </template>
 
@@ -9,7 +9,7 @@
     position: absolute;
     right: 0;
     width: calc(100vw - 350px);
-    height: 380px;
+    height: 400px;
     overflow: hidden;
     border-radius: 0 0 0 16px;
 }
@@ -20,15 +20,17 @@
     height: 100%;
     object-fit: cover;
     object-position: right center;
-    filter: brightness(70%);
-    -webkit-mask-image: linear-gradient(to right,
+    filter: brightness(40%);
+    --webkit-mask-image: linear-gradient(to right,
             transparent 0%,
-            black 35%,
+            transparent 18%,
+            black 70%,
             black 100%);
 
     mask-image: linear-gradient(to right,
             transparent 0%,
-            black 35%,
+            transparent 18%,
+            black 70%,
             black 100%);
 }
 </style>
