@@ -1,6 +1,24 @@
 <template>
-    <section class="imagem-background">
-        <img src="/imagem-fundo.png" alt="Imagem de fundo" />
+    <section class="container">
+        <div class="imagem-background">
+            <img src="/imagem-fundo.png" alt="Imagem de fundo" />
+        </div>
+
+        <div class="text-block">
+            <h1>Descubra novos rios.</h1>
+            <h1>Encontre <span>remadores.</span></h1>
+            <h1>Viva novas <span>aventuras.</span></h1>
+            <p>Explore locais, participe de encontros e compartilhe experiencias com a comunidade.</p>
+        </div>
+
+        <div class="actions">
+            <router-link to="mapa">
+                <div class="name">Explorar Mapa</div>
+            </router-link>
+            <router-link to="eventos">
+                <div class="name">Ver Eventos</div>
+            </router-link>
+        </div>
     </section>
 </template>
 
@@ -9,7 +27,7 @@
     position: absolute;
     right: 0;
     width: calc(100vw - 350px);
-    height: 400px;
+    height: 450px;
     overflow: hidden;
     border-radius: 0 0 0 16px;
 }
@@ -20,7 +38,8 @@
     height: 100%;
     object-fit: cover;
     object-position: right center;
-    filter: brightness(40%);
+    filter: brightness(50%);
+
     --webkit-mask-image: linear-gradient(to right,
             transparent 0%,
             transparent 18%,
@@ -32,5 +51,38 @@
             transparent 18%,
             black 70%,
             black 100%);
+}
+
+.text-block {
+    padding-top: 50px;
+    padding-left: 50px;
+    width: 450px;
+
+}
+
+h1 {
+    font-weight: 600;
+    font-size: clamp(1rem, 2.5vw, 2.25rem);
+    color: aliceblue;
+
+}
+
+span {
+    color: #36c9c1;
+    font-weight: 700;
+}
+
+p {
+    margin-top: 24px;
+    font-size: 18px;
+    font-weight: 400;
+    color: rgb(203, 204, 206);
+}
+
+.actions {
+    display: flex;
+    margin-top: 24px;
+    padding-left: 50px;
+    gap: 30px;
 }
 </style>
