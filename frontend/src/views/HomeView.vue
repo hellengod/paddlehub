@@ -13,14 +13,20 @@
 
         <div class="actions">
             <router-link to="mapa">
-                <div class="name">Explorar Mapa</div>
+                <BaseButton label="Explorar Mapa" width="180px" fontSize="16px" backgroundColor="#207974" />
             </router-link>
             <router-link to="eventos">
-                <div class="name">Ver Eventos</div>
+                <BaseButton label="Ver Eventos" width="180px" fontSize="16px" backgroundColor="#207974"></BaseButton>
             </router-link>
         </div>
     </section>
 </template>
+
+<script setup lang="ts">
+import BaseButton from '@/components/base/BaseButton.vue';
+
+
+</script>
 
 <style scoped>
 .imagem-background {
@@ -81,7 +87,6 @@ p {
 
 .actions {
     display: flex;
-    margin-top: 24px;
     padding-left: 50px;
     gap: 30px;
 }
