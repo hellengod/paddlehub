@@ -3,6 +3,8 @@ export interface LoginResponse {
     user: User,
 }
 
+export type AuthStatus = 'unknown' | 'authenticated' | 'guest'
+
 export interface User {
     id: number,
     email: string,
