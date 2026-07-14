@@ -3,8 +3,12 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import useAuth from './composable/useAuth'
 
 const app = createApp(App)
+const { initializeAuth } = useAuth()
+
+void initializeAuth()
 
 app.use(router)
 
