@@ -27,7 +27,7 @@ const router = createRouter({
     {
       path: '/app',
       name: 'app',
-      component: () => import('@/components/layouts/AppLayout.vue'),
+      component: () => import('@/components/templates/AppLayout.vue'),
       children: [
         {
           path: '/home',

@@ -38,14 +38,14 @@
 import useAuth from '@/composable/useAuth';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router'
-import SidebarLink from '../sidebar/SidebarLink.vue';
-import HomeIcon from '../icons/HomeIcon.vue';
-import MapIcon from '../icons/MapIcon.vue';
-import EventIcon from '../icons/EventIcon.vue';
-import RiverIcon from '../icons/RiverIcon.vue';
-import LogoutIcon from '../icons/LogoutIcon.vue';
-import CommunityIcon from '../icons/CommunityIcon.vue';
-import SidebarProfileCard from '../sidebar/SidebarProfileCard.vue';
+import SidebarLink from '@/components/molecules/SidebarLink.vue';
+import HomeIcon from '@/components/atoms/icons/HomeIcon.vue';
+import MapIcon from '@/components/atoms/icons/MapIcon.vue';
+import EventIcon from '@/components/atoms/icons/EventIcon.vue';
+import RiverIcon from '@/components/atoms/icons/RiverIcon.vue';
+import LogoutIcon from '@/components/atoms/icons/LogoutIcon.vue';
+import CommunityIcon from '@/components/atoms/icons/CommunityIcon.vue';
+import SidebarProfileCard from '@/components/molecules/SidebarProfileCard.vue';
 
 const loading = ref(false);
 const errorMessage = ref('');
