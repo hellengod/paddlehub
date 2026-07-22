@@ -1,12 +1,7 @@
 <template>
     <div class="container-right">
         <form class="login-card" @submit.prevent="handleLogin">
-            <div class="text-container">
-                <h1>
-                    Entrar na sua conta
-                </h1>
-                <p>Que bom te ver por aqui!</p>
-            </div>
+            <AuthFormHeader title="Entrar na sua conta" subtitle="Que bom te ver por aqui!"></AuthFormHeader>
             <BaseInput label="E-mail" type="email" placeholder="seu@email.com" v-model="email"
                 icon=".\letter-svgrepo-com.svg" />
             <BaseInput label="Senha" type="password" placeholder="Digite sua senha" v-model="password"
@@ -46,6 +41,7 @@ import BaseInput from '@/components/base/BaseInput.vue';
 import { ref } from 'vue';
 import useAuth from '@/composable/useAuth';
 import { useRouter } from 'vue-router';
+import AuthFormHeader from '@/components/molecules/AuthFormHeader.vue';
 
 const { login } = useAuth();
 const email = ref('');
@@ -97,11 +93,6 @@ async function handleLogin() {
     background: rgba(33, 86, 109, 0.096);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(69, 199, 255, 0.096);
-}
-
-.text-container {
-    text-align: center;
-    margin-bottom: 24px;
 }
 
 h1 {

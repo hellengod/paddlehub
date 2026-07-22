@@ -1,8 +1,3 @@
-<script setup lang="ts">
-import Card from './Card.vue';
-
-</script>
-
 <template>
     <div class="container-left">
         <div class="content">
@@ -10,14 +5,18 @@ import Card from './Card.vue';
             <h1>Conecte rios, <br>pessoas e <span class="highlight">remadas.</span></h1>
             <p>Descubra novos rios, registre suas experiências<br> e encontre outros remadores pleo caminho.</p>
             <div class="cards">
-                <Card title="Explore rios no mapa" icon="/map-pin-alt-svgrepo-com.svg"></Card>
-                <Card title="Compartilhe suas aventuras" icon="/camera-svgrepo-com.svg"></Card>
-                <Card title="Organize encontros" icon="/people-team-svgrepo-com.svg"></Card>
+                <AuthFeatureCard title="Explore rios no mapa" icon="/map-pin-alt-svgrepo-com.svg"></AuthFeatureCard>
+                <AuthFeatureCard title="Compartilhe suas aventuras" icon="/camera-svgrepo-com.svg"></AuthFeatureCard>
+                <AuthFeatureCard title="Organize encontros" icon="/people-team-svgrepo-com.svg"></AuthFeatureCard>
             </div>
 
         </div>
     </div>
 </template>
+<script setup lang="ts">
+import AuthFeatureCard from '@/components/molecules/AuthFeatureCard.vue';
+
+</script>
 <style scoped>
 .container-left {
     background-color: rgb(22, 99, 73);
@@ -69,7 +68,7 @@ p {
 
 }
 
-.cards{
+.cards {
     display: flex;
     gap: 10px;
     margin-top: 70px;

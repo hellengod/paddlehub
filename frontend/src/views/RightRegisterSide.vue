@@ -1,12 +1,8 @@
 <template>
     <div class="container-right">
         <form class="login-card" @submit.prevent="handleRegister">
-            <div class="text-container">
-                <h1>
-                    Crie sua conta
-                </h1>
-                <p>Vamos comecar a sua jornada conosco</p>
-            </div>
+            <AuthFormHeader title="Crie sua conta" subtitle="Vamos comecar a sua jornada conosco"></AuthFormHeader>
+
             <BaseInput label="Nome" type="text" placeholder="Seu nome completo" v-model="name"
                 icon="./user-svgrepo-com.svg" />
             <BaseInput label="E-mail" type="email" placeholder="seu@email.com" v-model="email"
@@ -47,6 +43,7 @@
 </template>
 <script setup lang="ts">
 import BaseInput from '@/components/base/BaseInput.vue';
+import AuthFormHeader from '@/components/molecules/AuthFormHeader.vue';
 import useAuth from '@/composable/useAuth';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -106,11 +103,6 @@ async function handleRegister() {
     background: rgba(33, 86, 109, 0.096);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(69, 199, 255, 0.096);
-}
-
-.text-container {
-    text-align: center;
-    margin-bottom: 24px;
 }
 
 h1 {
