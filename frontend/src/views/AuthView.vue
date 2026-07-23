@@ -13,9 +13,9 @@
 </template>
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import LeftAuthSide from './LeftAuthSide.vue';
-import RightLoginSide from './RightLoginSide.vue';
-import RightRegisterSide from './RightRegisterSide.vue';
+import LeftAuthSide from '@/components/organisms/LeftAuthSide.vue';
+import RightLoginSide from '@/components/organisms/RightLoginSide.vue';
+import RightRegisterSide from '@/components/organisms/RightRegisterSide.vue';
 import { computed } from 'vue';
 
 const route = useRoute();
