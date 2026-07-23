@@ -1,12 +1,8 @@
 <template>
     <div class="container-right">
         <form class="login-card" @submit.prevent="handleRegister">
-            <div class="text-container">
-                <h1>
-                    Crie sua conta
-                </h1>
-                <p>Vamos comecar a sua jornada conosco</p>
-            </div>
+            <AuthFormHeader title="Crie sua conta" subtitle="Vamos comecar a sua jornada conosco"></AuthFormHeader>
+
             <BaseInput label="Nome" type="text" placeholder="Seu nome completo" v-model="name"
                 icon="./user-svgrepo-com.svg" />
             <BaseInput label="E-mail" type="email" placeholder="seu@email.com" v-model="email"
@@ -24,8 +20,6 @@
                     <input type="checkbox" />
                     <span>Aceito os termos e condicoes</span>
                 </label>
-
-
             </div>
 
             <div class="submit-container">
@@ -34,12 +28,7 @@
                     <img class="submit-icon" src="/arrow-sm-right-svgrepo-com.svg" />
 
                 </button>
-                <div class="divider"></div>
-                <div class="cadastro"> <span>Ja tem uma conta?</span>
-                    <router-link to="/">Entrar <img src="/arrow-green.svg" class="link-icon"></router-link>
-                </div>
-
-
+                <AuthFormFooter helperText="Ja tem uma conta?" linkText="Entrar" to="/"></AuthFormFooter>
             </div>
 
         </form>
@@ -47,6 +36,8 @@
 </template>
 <script setup lang="ts">
 import BaseInput from '@/components/atoms/BaseInput.vue';
+import AuthFormFooter from '@/components/molecules/AuthFormFooter.vue';
+import AuthFormHeader from '@/components/molecules/AuthFormHeader.vue';
 import useAuth from '@/composable/useAuth';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -107,23 +98,6 @@ async function handleRegister() {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(69, 199, 255, 0.096);
 }
-
-.text-container {
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-h1 {
-    color: aliceblue;
-    font-size: 34px;
-    margin-bottom: 10px;
-    font-weight: 500;
-}
-
-p {
-    font-size: 18px;
-}
-
 .login-actions {
     display: flex;
     justify-content: space-between;
@@ -170,33 +144,6 @@ p {
     width: 30px;
     position: absolute;
     right: 15px;
-}
-
-.link-icon {
-    width: 30px;
-
-}
-
-.divider {
-    width: 100%;
-    height: 1px;
-    margin-top: 36px;
-    background-color: rgba(255, 255, 255, 0.12);
-}
-
-.cadastro {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-top: 20px;
-    font-size: 15px;
-}
-
-.cadastro a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
 }
 
 .error {

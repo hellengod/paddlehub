@@ -9,12 +9,12 @@
     </div>
 </template>
 <script setup lang="ts">
-interface CardProps {
+interface AuthFeatureCardProps {
     title: string;
     icon: string;
 }
 
-const props = defineProps<CardProps>();
+const props = defineProps<AuthFeatureCardProps>();
 </script>
 <style scoped>
 .container {
