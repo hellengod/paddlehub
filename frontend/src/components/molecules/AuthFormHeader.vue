@@ -8,11 +8,11 @@
     </div>
 </template>
 <script lang="ts" setup>
-interface AuthFormHeader {
+interface AuthFormHeaderProps {
     title: string
     subtitle: string
 }
-const props = defineProps<AuthFormHeader>();
+const props = defineProps<AuthFormHeaderProps>();
 </script>
 
 <style scoped>
