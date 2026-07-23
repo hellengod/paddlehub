@@ -20,4 +20,15 @@ const props = defineProps<AuthFormHeader>();
     text-align: center;
     margin-bottom: 24px;
 }
+
+h1 {
+    color: aliceblue;
+    font-size: 34px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+p {
+    font-size: 18px;
+}
 </style>

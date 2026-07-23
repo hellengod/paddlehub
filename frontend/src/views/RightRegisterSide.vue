@@ -30,12 +30,7 @@
                     <img class="submit-icon" src="/arrow-sm-right-svgrepo-com.svg" />
 
                 </button>
-                <div class="divider"></div>
-                <div class="cadastro"> <span>Ja tem uma conta?</span>
-                    <router-link to="/">Entrar <img src="/arrow-green.svg" class="link-icon"></router-link>
-                </div>
-
-
+                <AuthFormFooter helperText="Ja tem uma conta?" linkText="Entrar" to="/"></AuthFormFooter>
             </div>
 
         </form>
@@ -43,6 +38,7 @@
 </template>
 <script setup lang="ts">
 import BaseInput from '@/components/base/BaseInput.vue';
+import AuthFormFooter from '@/components/molecules/AuthFormFooter.vue';
 import AuthFormHeader from '@/components/molecules/AuthFormHeader.vue';
 import useAuth from '@/composable/useAuth';
 import { ref } from 'vue';
@@ -104,18 +100,6 @@ async function handleRegister() {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(69, 199, 255, 0.096);
 }
-
-h1 {
-    color: aliceblue;
-    font-size: 34px;
-    margin-bottom: 10px;
-    font-weight: 500;
-}
-
-p {
-    font-size: 18px;
-}
-
 .login-actions {
     display: flex;
     justify-content: space-between;
@@ -162,33 +146,6 @@ p {
     width: 30px;
     position: absolute;
     right: 15px;
-}
-
-.link-icon {
-    width: 30px;
-
-}
-
-.divider {
-    width: 100%;
-    height: 1px;
-    margin-top: 36px;
-    background-color: rgba(255, 255, 255, 0.12);
-}
-
-.cadastro {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-top: 20px;
-    font-size: 15px;
-}
-
-.cadastro a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
 }
 
 .error {

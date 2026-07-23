@@ -25,12 +25,7 @@
                     <img class="submit-icon" src="/arrow-sm-right-svgrepo-com.svg" />
 
                 </button>
-                <div class="divider"></div>
-                <div class="cadastro"> <span>Nao tem uma conta?</span>
-                    <router-link to="/cadastro">Criar conta <img src="/arrow-green.svg" class="link-icon"></router-link>
-                </div>
-
-
+                <AuthFormFooter helperText="Nao tem uma conta?" linkText="Criar conta" to="/cadastro"></AuthFormFooter>
             </div>
 
         </form>
@@ -42,6 +37,7 @@ import { ref } from 'vue';
 import useAuth from '@/composable/useAuth';
 import { useRouter } from 'vue-router';
 import AuthFormHeader from '@/components/molecules/AuthFormHeader.vue';
+import AuthFormFooter from '@/components/molecules/AuthFormFooter.vue';
 
 const { login } = useAuth();
 const email = ref('');
@@ -95,17 +91,6 @@ async function handleLogin() {
     border: 1px solid rgba(69, 199, 255, 0.096);
 }
 
-h1 {
-    color: aliceblue;
-    font-size: 34px;
-    margin-bottom: 10px;
-    font-weight: 500;
-}
-
-p {
-    font-size: 18px;
-}
-
 .login-actions {
     display: flex;
     justify-content: space-between;
@@ -152,33 +137,6 @@ p {
     width: 30px;
     position: absolute;
     right: 15px;
-}
-
-.link-icon {
-    width: 30px;
-
-}
-
-.divider {
-    width: 100%;
-    height: 1px;
-    margin-top: 36px;
-    background-color: rgba(255, 255, 255, 0.12);
-}
-
-.cadastro {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-top: 20px;
-    font-size: 15px;
-}
-
-.cadastro a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
 }
 
 .error {
