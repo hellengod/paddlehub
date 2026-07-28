@@ -1,15 +1,14 @@
 <template>
-    <div class="allsides">
-        <div class="left side">
+    <AuthLayout>
+        <template #left>
             <LeftAuthSide></LeftAuthSide>
-        </div>
-        <div class="right side" v-if="isRegister">
-            <RightRegisterSide></RightRegisterSide>
-        </div>
-        <div class="right side" v-else>
-            <RightLoginSide></RightLoginSide>
-        </div>
-    </div>
+        </template>
+
+        <template #right>
+            <RightRegisterSide v-if="isRegister"></RightRegisterSide>
+            <RightLoginSide v-else></RightLoginSide>
+        </template>
+    </AuthLayout>
 </template>
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
@@ -17,6 +16,7 @@ import LeftAuthSide from '@/components/organisms/LeftAuthSide.vue';
 import RightLoginSide from '@/components/organisms/RightLoginSide.vue';
 import RightRegisterSide from '@/components/organisms/RightRegisterSide.vue';
 import { computed } from 'vue';
+import AuthLayout from '@/components/templates/AuthLayout.vue';
 
 const route = useRoute();
 
@@ -24,16 +24,3 @@ const isRegister = computed(() => {
     return route.meta.authMode === 'register';
 }) 
 </script>
-<style scoped>
-.allsides {
-    min-height: 100vh;
-    width: 100%;
-
-    display: flex;
-    flex-direction: row;
-}
-
-.side {
-    flex: 1;
-}
-</style>
