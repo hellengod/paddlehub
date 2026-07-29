@@ -1,43 +1,29 @@
 <template>
-    <div class="container-right">
-        <form class="login-card" @submit.prevent="handleLogin">
-            <AuthFormHeader title="Entrar na sua conta" subtitle="Que bom te ver por aqui!"></AuthFormHeader>
-            <BaseInput label="E-mail" type="email" placeholder="seu@email.com" v-model="email"
-                icon=".\letter-svgrepo-com.svg" />
-            <BaseInput label="Senha" type="password" placeholder="Digite sua senha" v-model="password"
-                icon=".\padlock-outlined-svgrepo-com.svg" />
-            <span v-if="errorMessage" class="error">
-                {{ errorMessage }}
-            </span>
-            <div class="login-actions">
+    <AuthFormShell title="Entrar na sua conta" subtitle="Que bom te ver por aqui!" submitLabel="Entrar"
+        loadingLabel="Entrando..." :loading="loading" :errorMessage="errorMessage" footerHelperText="Nao tem uma conta?"
+        footerLinkText="Criar conta" footerTo="/cadastro" @submit="handleLogin">
 
-                <label class="remember-me">
-                    <input type="checkbox" />
-                    <span>Lembrar de mim</span>
-                </label>
+        <BaseInput label="E-mail" type="email" placeholder="seu@email.com" v-model="email"
+            icon=".\letter-svgrepo-com.svg" />
+        <BaseInput label="Senha" type="password" placeholder="Digite sua senha" v-model="password"
+            icon=".\padlock-outlined-svgrepo-com.svg" />
 
-                <a href="">Esqueci minha senha</a>
-            </div>
+        <template #actions>
+            <label class="remember-me">
+                <input type="checkbox" />
+                <span>Lembrar de mim</span>
+            </label>
 
-            <div class="submit-container">
-                <button class="submit" :disabled="loading" type="submit">
-                    {{ loading ? 'Entrando...' : 'Entrar' }}
-                    <img class="submit-icon" src="/arrow-sm-right-svgrepo-com.svg" />
-
-                </button>
-                <AuthFormFooter helperText="Nao tem uma conta?" linkText="Criar conta" to="/cadastro"></AuthFormFooter>
-            </div>
-
-        </form>
-    </div>
+            <a href="">Esqueci minha senha</a>
+        </template>
+    </AuthFormShell>
 </template>
 <script setup lang="ts">
 import BaseInput from '@/components/atoms/BaseInput.vue';
 import { ref } from 'vue';
 import useAuth from '@/composable/useAuth';
 import { useRouter } from 'vue-router';
-import AuthFormHeader from '@/components/molecules/AuthFormHeader.vue';
-import AuthFormFooter from '@/components/molecules/AuthFormFooter.vue';
+import AuthFormShell from './AuthFormShell.vue';
 
 const { login } = useAuth();
 const email = ref('');
@@ -73,32 +59,6 @@ async function handleLogin() {
 </script>
 
 <style scoped>
-.container-right {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #08161c;
-}
-
-.login-card {
-    width: min(100%, 520px);
-    padding: 36px;
-    border-radius: 15px;
-    background: rgba(33, 86, 109, 0.096);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(69, 199, 255, 0.096);
-}
-
-.login-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 12px 0;
-    font-size: 18px;
-}
-
 .remember-me {
     display: flex;
     align-items: center;
@@ -110,36 +70,5 @@ async function handleLogin() {
     width: 20px;
     height: 20px;
     accent-color: rgb(22, 99, 73);
-}
-
-.submit {
-    background-color: rgb(22, 99, 73);
-    color: aliceblue;
-    text-align: center;
-    height: 65px;
-    width: 100%;
-    border-radius: 10px;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    position: relative;
-    justify-content: center;
-    border: 2px solid rgb(20, 61, 47);
-    margin-top: 32px;
-}
-
-.submit:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.submit-icon {
-    width: 30px;
-    position: absolute;
-    right: 15px;
-}
-
-.error {
-    color: darkred;
 }
 </style>
