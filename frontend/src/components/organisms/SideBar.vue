@@ -3,23 +3,12 @@
         <div class="sidebar-header">
             <img src="/logo-paddlehub-grande.png" alt="Logo" class="logo">
         </div>
-
-        <nav class="sidebar-nav">
-            <ul>
-                <li v-for="item in menuItems" :key="item.to">
-                    <SidebarLink :icon="item.icon" :to="item.to" :label="item.label"></SidebarLink>
-                </li>
-            </ul>
-        </nav>
+        <SidebarNavigation :items="menuItems"></SidebarNavigation>
 
         <div class="sidebar-footer">
             <div class="perfil">
-                <SidebarProfileCard
-                    name="Hellen Bianchini"
-                    location="Rio Juquia, SP"
-                    avatar-url="/profile-user.svg"
-                    route-name="perfil"
-                ></SidebarProfileCard>
+                <SidebarProfileCard name="Hellen Bianchini" location="Rio Juquia, SP" avatar-url="/profile-user.svg"
+                    route-name="perfil"></SidebarProfileCard>
             </div>
             <button @click="handleLogout" :disabled="loading" class="logout-button">
                 <span class="logout-icon" aria-hidden="true">
@@ -46,6 +35,7 @@ import RiverIcon from '@/components/atoms/icons/RiverIcon.vue';
 import LogoutIcon from '@/components/atoms/icons/LogoutIcon.vue';
 import CommunityIcon from '@/components/atoms/icons/CommunityIcon.vue';
 import SidebarProfileCard from '@/components/molecules/SidebarProfileCard.vue';
+import SidebarNavigation from './SidebarNavigation.vue';
 
 const loading = ref(false);
 const errorMessage = ref('');
@@ -176,18 +166,7 @@ async function handleLogout() {
     cursor: not-allowed;
 }
 
-.sidebar-nav {
-    padding-inline: 15px;
-}
 
-.sidebar-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
 
 .sidebar-footer {
     margin-top: auto;
