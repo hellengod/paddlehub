@@ -17,8 +17,8 @@
     </div>
 </template>
 <script lang="ts" setup>
-import LogoutIcon from '../atoms/icons/LogoutIcon.vue';
-import SidebarProfileCard from '../molecules/SidebarProfileCard.vue';
+import LogoutIcon from '@/components/atoms/icons/LogoutIcon.vue';
+import SidebarProfileCard from '@/components/molecules/SidebarProfileCard.vue';
 
 interface SidebarFooterProps {
     loading: boolean,

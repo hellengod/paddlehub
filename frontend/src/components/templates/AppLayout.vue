@@ -1,7 +1,7 @@
 <template>
     <div class="layout-all">
         <div class="layout-shell">
-            <SideBar></SideBar>
+            <Sidebar></Sidebar>
             <div class="main">
                 <RouterView></RouterView>
             </div>
@@ -9,7 +9,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import SideBar from '@/components/organisms/SideBar.vue';
+import Sidebar from '@/components/organisms/Sidebar.vue';
 </script>
 <style scoped>
 .layout-all {
