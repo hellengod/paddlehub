@@ -23,8 +23,8 @@
 </template>
 
 <script lang="ts" setup>
-import AuthFormFooter from '../molecules/AuthFormFooter.vue';
-import AuthFormHeader from '../molecules/AuthFormHeader.vue';
+import AuthFormFooter from '@/components/molecules/AuthFormFooter.vue';
+import AuthFormHeader from '@/components/molecules/AuthFormHeader.vue';
 
 interface AuthFormShellProps {
     title: string,

@@ -18,8 +18,8 @@ import MapIcon from '@/components/atoms/icons/MapIcon.vue';
 import EventIcon from '@/components/atoms/icons/EventIcon.vue';
 import RiverIcon from '@/components/atoms/icons/RiverIcon.vue';
 import CommunityIcon from '@/components/atoms/icons/CommunityIcon.vue';
-import SidebarNavigation from './SidebarNavigation.vue';
-import SidebarFooter from './SidebarFooter.vue';
+import SidebarNavigation from '@/components/organisms/SidebarNavigation.vue';
+import SidebarFooter from '@/components/organisms/SidebarFooter.vue';
 
 const loading = ref(false);
 const errorMessage = ref('');

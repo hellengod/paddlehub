@@ -23,7 +23,7 @@ import BaseInput from '@/components/atoms/BaseInput.vue';
 import { ref } from 'vue';
 import useAuth from '@/composable/useAuth';
 import { useRouter } from 'vue-router';
-import AuthFormShell from './AuthFormShell.vue';
+import AuthFormShell from '@/components/organisms/AuthFormShell.vue';
 
 const { login } = useAuth();
 const email = ref('');

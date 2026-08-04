@@ -9,8 +9,8 @@
 </template>
 
 <script lang="ts" setup>
-import type { MenuItem } from '@/types/menuItems.ts';
-import SidebarLink from '../molecules/SidebarLink.vue';
+import type { MenuItem } from '@/types/menuItems';
+import SidebarLink from '@/components/molecules/SidebarLink.vue';
 interface SidebarNavigationProps {
     items: MenuItem[]
 }
