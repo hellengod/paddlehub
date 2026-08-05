@@ -69,12 +69,12 @@ import BaseButton from '@/components/atoms/BaseButton.vue';
 h1 {
     font-weight: 600;
     font-size: clamp(1rem, 2.5vw, 2.25rem);
-    color: aliceblue;
+    color: var(--color-text-primary);
 
 }
 
 span {
-    color: #36c9c1;
+    color: var(--color-accent-primary);
     font-weight: 700;
 }
 
@@ -82,12 +82,18 @@ p {
     margin-top: 24px;
     font-size: 18px;
     font-weight: 400;
-    color: rgb(203, 204, 206);
+    color: var(--color-text-secondary);
 }
 
 .actions {
     display: flex;
     padding-left: 50px;
     gap: 30px;
+}
+
+.actions a {
+    display: inline-flex;
+    text-decoration: none;
+    color: inherit;
 }
 </style>

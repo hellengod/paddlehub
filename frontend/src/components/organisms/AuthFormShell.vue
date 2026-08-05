@@ -49,42 +49,42 @@ const emit = defineEmits(['submit'])
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #08161c;
+    background-color: var(--color-bg-surface);
     padding: 24px 0;
 }
 
 .login-card {
     width: min(100%, 500px);
     height: max-content;
-    padding: 25px;
-    border-radius: 15px;
-    background: rgba(33, 86, 109, 0.096);
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-glass);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(69, 199, 255, 0.096);
+    border: 1px solid var(--color-border-panel);
 }
 
 .login-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 12px 0;
+    margin: var(--space-3) 0;
     font-size: 18px;
 }
 
 .submit {
-    background-color: rgb(22, 99, 73);
-    color: aliceblue;
+    background-color: var(--color-action-primary);
+    color: var(--color-action-primary-text);
     text-align: center;
     height: 65px;
     width: 100%;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     font-size: 20px;
     display: flex;
     align-items: center;
     position: relative;
     justify-content: center;
-    border: 2px solid rgb(20, 61, 47);
-    margin-top: 32px;
+    border: 2px solid var(--color-border-strong);
+    margin-top: var(--space-8);
 }
 
 .submit:disabled {
@@ -99,18 +99,18 @@ const emit = defineEmits(['submit'])
 }
 
 .error {
-    color: darkred;
+    color: var(--color-danger);
 }
 
 @media (max-height: 800px) {
     .container-right {
         align-items: flex-start;
-        padding: 24px 0;
+        padding: var(--space-6) 0;
     }
 
     .login-card {
-        margin: 24px 0;
-        padding: 24px;
+        margin: var(--space-6) 0;
+        padding: var(--space-6);
     }
 }
 </style>

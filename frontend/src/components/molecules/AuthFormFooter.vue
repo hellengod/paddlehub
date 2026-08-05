@@ -1,6 +1,6 @@
 <template>
     <div class="divider"></div>
-    <div class="cadastro">
+    <div class="footer-content">
         <span>{{ props.helperText }}</span>
 
         <router-link :to="props.to">
@@ -24,23 +24,28 @@ const props = defineProps<AuthFormFooterProps>()
 .divider {
     width: 100%;
     height: 1px;
-    margin-top: 36px;
-    background-color: rgba(255, 255, 255, 0.12);
+    margin-top: var(--space-6);
+    background-color: var(--color-border-subtle);
 }
 
-.cadastro {
+.footer-content {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
-    margin-top: 20px;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
     font-size: 15px;
 }
 
-.cadastro a {
+.footer-content span {
+    color: var(--color-text-secondary);
+}
+
+.footer-content a {
     display: flex;
     align-items: center;
     text-decoration: none;
+    color: var(--color-accent-primary);
 }
 
 .link-icon {

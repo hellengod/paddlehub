@@ -25,13 +25,13 @@ const props = defineProps<SidebarLink>();
 .sidebar-link {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: var(--space-5);
     width: 100%;
-    padding: 20px 14px;
-    border-radius: 10px;
+    padding: var(--space-5) var(--space-3);
+    border-radius: var(--radius-sm);
     border: 1px solid transparent;
     background: transparent;
-    color: aliceblue;
+    color: var(--color-text-primary);
     text-decoration: none;
     transition:
         color 0.2s ease,
@@ -41,9 +41,9 @@ const props = defineProps<SidebarLink>();
 
 .sidebar-link:hover,
 .sidebar-link.router-link-active {
-    color: #3be4db;
-    background: rgba(27, 179, 153, 0.096);
-    border: 1px solid rgba(255, 255, 255, 0.123);
+    color: var(--color-accent-strong);
+    background: var(--color-accent-soft);
+    border: 1px solid var(--color-border-subtle);
 }
 
 .icon {

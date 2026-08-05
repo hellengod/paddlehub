@@ -4,7 +4,7 @@
             <SidebarProfileCard name="Hellen Bianchini" location="Rio Juquia, SP" avatar-url="/profile-user.svg"
                 route-name="perfil"></SidebarProfileCard>
         </div>
-        <button @click="emit('logout')" :disabled="loading" class="logout-button">
+        <button @click="handleLogout" :disabled="loading" class="logout-button">
             <span class="logout-icon" aria-hidden="true">
                 <LogoutIcon></LogoutIcon>
             </span>
@@ -38,22 +38,22 @@ function handleLogout() {
     margin-top: auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px 15px;
+    gap:var(--space-3);
+    padding: var(--space-4);
 }
 
 .logout-button {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: var(--space-5);
     width: 100%;
     border: 1px solid transparent;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     background: transparent;
     padding: 20px 14px;
     cursor: pointer;
     font: inherit;
-    color: aliceblue;
+    color: var(--color-text-primary);
     text-decoration: none;
     transition:
         color 0.2s ease,
@@ -62,9 +62,9 @@ function handleLogout() {
 }
 
 .logout-button:hover {
-    color: #3be4db;
-    background: rgba(27, 179, 153, 0.096);
-    border-color: rgba(255, 255, 255, 0.123);
+    color: var(--color-accent-strong);
+    background: var(--color-accent-soft);
+    border-color: var(--color-border-subtle);
 }
 
 .logout-button:disabled {
@@ -78,7 +78,7 @@ function handleLogout() {
 }
 
 .error {
-    color: darkred;
+    color: var(--color-danger);
 }
 
 .logout-icon {

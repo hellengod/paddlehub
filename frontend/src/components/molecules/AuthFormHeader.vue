@@ -1,9 +1,9 @@
 <template>
     <div class="text-container">
         <h1>
-            {{ $props.title }}
+            {{ props.title }}
         </h1>
-        <p> {{ $props.subtitle }}
+        <p> {{ props.subtitle }}
         </p>
     </div>
 </template>
@@ -18,17 +18,18 @@ const props = defineProps<AuthFormHeaderProps>();
 <style scoped>
 .text-container {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: var(--space-6);
 }
 
 h1 {
-    color: aliceblue;
+    color: var(--color-text-primary);
     font-size: 34px;
-    margin-bottom: 10px;
+    margin-bottom: var(--space-3);
     font-weight: 500;
 }
 
 p {
     font-size: 18px;
+    color: var(--color-text-secondary);
 }
 </style>
