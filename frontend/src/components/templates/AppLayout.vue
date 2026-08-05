@@ -15,7 +15,7 @@ import Sidebar from '@/components/organisms/Sidebar.vue';
 .layout-all {
     display: flex;
     min-height: 100vh;
-    background: #010a12;
+    background: var(--color-bg-app);
     padding: 10px;
 
     .layout-shell {

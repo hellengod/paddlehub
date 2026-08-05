@@ -3,7 +3,7 @@
         <div class="content">
             <img src="/logo-paddlehub-grande.png" alt="" class="logo-grande">
             <h1>Conecte rios, <br>pessoas e <span class="highlight">remadas.</span></h1>
-            <p>Descubra novos rios, registre suas experiências<br> e encontre outros remadores pleo caminho.</p>
+            <p>Descubra novos rios, registre suas experiências<br> e encontre outros remadores pelo caminho.</p>
             <div class="cards">
                 <AuthFeatureCard title="Explore rios no mapa" icon="/map-pin-alt-svgrepo-com.svg"></AuthFeatureCard>
                 <AuthFeatureCard title="Compartilhe suas aventuras" icon="/camera-svgrepo-com.svg"></AuthFeatureCard>
@@ -19,7 +19,7 @@ import AuthFeatureCard from '@/components/molecules/AuthFeatureCard.vue';
 </script>
 <style scoped>
 .container-left {
-    background-color: rgb(22, 99, 73);
+    background-color: var(--color-action-primary);
     height: 100%;
     background-image: url(/img-fundo-login.png);
     background-size: cover;
@@ -45,32 +45,28 @@ import AuthFeatureCard from '@/components/molecules/AuthFeatureCard.vue';
     flex-direction: column;
     position: relative;
     z-index: 1;
-    left: 60px;
+    padding-left: 60px;
 }
 
 h1 {
-    color: whitesmoke;
-}
-
-h1,
-span {
+    color: var(--color-text-primary);
     font-weight: bold;
     font-size: 55px;
-
 }
 
 .highlight {
-    color: rgb(34, 153, 113);
+    color: var(--color-accent-primary);
 }
 
 p {
     font-size: 20px;
+    color: var(--color-text-secondary);
 
 }
 
 .cards {
     display: flex;
-    gap: 10px;
+    gap: var(--space-3);
     margin-top: 70px;
 }
 </style>

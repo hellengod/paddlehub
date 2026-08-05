@@ -81,11 +81,11 @@ async function handleLogout() {
 <style scoped>
 .sidebar {
     width: 300px;
-    border: 1px solid rgba(69, 199, 255, 0.096);
+    border: 1px solid var(--color-border-panel);
     display: flex;
     flex-direction: column;
-    background-color: #03141e;
-    border-radius: 10px;
+    background-color: var(--color-bg-panel);
+    border-radius: var(--radius-sm);
 }
 
 

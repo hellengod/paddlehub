@@ -18,12 +18,12 @@ const props = defineProps<AuthFeatureCardProps>();
 </script>
 <style scoped>
 .container {
-    background: rgba(27, 179, 153, 0.096);
+    background: var(--color-accent-soft);
     backdrop-filter: blur(1px);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     width: 200px;
     height: 70px;
-    border: 1px solid rgba(255, 255, 255, 0.123);
+    border: 1px solid var(--color-border-subtle);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -35,7 +35,7 @@ const props = defineProps<AuthFeatureCardProps>();
     width: 40px;
     height: 40px;
     margin-left: 10px;
-    border-radius: 7px;
+    border-radius: var(--radius-sm);
 }
 
 img {
@@ -44,6 +44,6 @@ img {
 }
 
 .text-content {
-    color: aliceblue;
+    color: var(--color-text-primary);
 }
 </style>

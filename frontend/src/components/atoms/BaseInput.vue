@@ -38,12 +38,12 @@ function handleInput(event: Event) {
 .input {
   height: 54px;
   background-color: transparent;
-  border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.123);
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--color-border-subtle);
   font-size: 17px;
   width: 100%;
   padding-left: 48px;
-  color: aliceblue;
+  color: var(--color-text-primary);
 }
 
 .input-wrapper {
@@ -61,6 +61,6 @@ function handleInput(event: Event) {
 }
 
 label {
-  color: rgba(240, 248, 255, 0.801);
+  color: var(--color-text-muted);
 }
 </style>

@@ -36,23 +36,23 @@ interface BaseButtonProps {
 const props = withDefaults(defineProps<BaseButtonProps>(), {
   width: '100%',
   fontSize: '20px',
-  backgroundColor: 'rgb(22, 99, 73)',
-  textColor: 'aliceblue',
-  borderColor: 'rgb(20, 61, 47)'
+  backgroundColor: 'var(--color-action-primary)',
+  textColor: 'var(--color-action-primary-text)',
+  borderColor: 'var(--color-border-strong)'
 })
 </script>
 
 <style scoped>
 .button {
   height: 65px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 2px solid;
   text-align: center;
   display: flex;
   align-items: center;
   position: relative;
   justify-content: center;
-  margin-top: 32px;
+  margin-top: var(--space-8);
   cursor: pointer;
 }
 

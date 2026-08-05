@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="profile-card">
         <div class="header">
             <div class="avatar">
                 <img :src="props.avatarUrl" :alt="props.name">
@@ -28,19 +28,19 @@ const props = defineProps<SidebarProfileCardProps>();
 </script>
 
 <style scoped>
-.container {
+.profile-card {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.123);
-    border-radius: 10px;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
 }
 
 .header {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-3);
 }
 
 .avatar {
@@ -65,12 +65,12 @@ img {
 .name {
     font-size: 16px;
     font-weight: 600;
-    color: aliceblue;
+    color: var(--color-text-primary);
 }
 
 .location {
     font-size: 14px;
-
+    color: var(--color-text-secondary);
 }
 
 .action {
@@ -83,10 +83,10 @@ img {
     align-items: center;
     width: 100%;
     padding: 12px 14px;
-    border: 1px solid rgba(255, 255, 255, 0.123);
-    border-radius: 10px;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
     background: transparent;
-    color: #3be4db;
+    color: var(--color-accent-strong);
     font-size: 14px;
     line-height: 1;
     text-decoration: none;
@@ -97,8 +97,8 @@ img {
 }
 
 .profile-link:hover {
-    color: #3be4db;
-    background: rgba(27, 179, 153, 0.096);
-    border-color: rgba(255, 255, 255, 0.123);
+    color: var(--color-accent-strong);
+    background: var(--color-accent-soft);
+    border-color: var(--color-border-subtle);
 }
 </style>

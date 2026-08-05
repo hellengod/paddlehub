@@ -74,6 +74,6 @@ async function handleRegister() {
 .remember-me input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    accent-color: rgb(22, 99, 73);
+    accent-color: var(--color-action-primary);
 }
 </style>

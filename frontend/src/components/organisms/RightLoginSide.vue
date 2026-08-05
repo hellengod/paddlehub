@@ -14,7 +14,7 @@
                 <span>Lembrar de mim</span>
             </label>
 
-            <a href="">Esqueci minha senha</a>
+            <a href="" class="forgot-password">Esqueci minha senha</a>
         </template>
     </AuthFormShell>
 </template>
@@ -69,6 +69,11 @@ async function handleLogin() {
 .remember-me input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    accent-color: rgb(22, 99, 73);
+    accent-color: var(--color-action-primary);
+}
+
+.forgot-password {
+    color: var(--color-accent-primary);
+    text-decoration: none;
 }
 </style>
