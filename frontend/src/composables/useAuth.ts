@@ -12,7 +12,7 @@ const authState = reactive<{
 
 let authRequest: Promise<boolean> | null = null;
 
-export default function useAuth() {
+export function useAuth() {
 
     async function initializeCsrf() {
         await apiClient.get('/sanctum/csrf-cookie');

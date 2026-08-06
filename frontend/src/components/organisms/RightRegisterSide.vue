@@ -10,7 +10,7 @@
         <BaseInput label="Senha" type="password" placeholder="Digite sua senha" v-model="password"
             icon=".\padlock-outlined-svgrepo-com.svg" />
         <BaseInput label="Confirmar Senha" type="password" placeholder="Confirme sua senha"
-            v-model="password_confirmation" icon=".\padlock-outlined-svgrepo-com.svg" />
+            v-model="passwordConfirmation" icon=".\padlock-outlined-svgrepo-com.svg" />
 
         <template #actions>
             <label class="remember-me">
@@ -23,7 +23,7 @@
 </template>
 <script setup lang="ts">
 import BaseInput from '@/components/atoms/BaseInput.vue';
-import useAuth from '@/composable/useAuth';
+import { useAuth } from '@/composables/useAuth';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthFormShell from '@/components/organisms/AuthFormShell.vue';
@@ -33,7 +33,7 @@ const router = useRouter();
 const name = ref('');
 const email = ref('');
 const password = ref('');
-const password_confirmation = ref('');
+const passwordConfirmation = ref('');
 const loading = ref(false);
 const errorMessage = ref('');
 
@@ -43,7 +43,7 @@ async function handleRegister() {
     loading.value = true;
 
     try {
-        await register(name.value, email.value, password.value, password_confirmation.value)
+        await register(name.value, email.value, password.value, passwordConfirmation.value)
         void router.push({ name: 'login' });
 
     }

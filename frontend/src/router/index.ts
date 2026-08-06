@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import AuthView from '@/views/AuthView.vue'
-import useAuth from '@/composable/useAuth'
+import {useAuth} from '@/composables/useAuth.ts'
 
 const { authState, initializeAuth } = useAuth();
 const router = createRouter({

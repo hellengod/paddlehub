@@ -1,7 +1,7 @@
 <template>
     <section class="container">
         <div class="imagem-background">
-            <img src="/imagem-fundo.png" alt="Imagem de fundo" />
+            <img src="/imagem-fundo4.png" alt="Imagem de fundo" />
         </div>
 
         <div class="text-block">

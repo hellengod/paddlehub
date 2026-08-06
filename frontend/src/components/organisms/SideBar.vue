@@ -10,7 +10,7 @@
     </aside>
 </template>
 <script setup lang="ts">
-import useAuth from '@/composable/useAuth';
+import {useAuth} from '@/composables/useAuth';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router'
 import HomeIcon from '@/components/atoms/icons/HomeIcon.vue';
