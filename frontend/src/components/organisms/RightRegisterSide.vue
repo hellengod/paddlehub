@@ -28,22 +28,24 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthFormShell from '@/components/organisms/AuthFormShell.vue';
 
-const { register } = useAuth();
+const { register, loading } = useAuth();
 const router = useRouter();
 const name = ref('');
 const email = ref('');
 const password = ref('');
 const passwordConfirmation = ref('');
-const loading = ref(false);
 const errorMessage = ref('');
 
 
 async function handleRegister() {
     errorMessage.value = '';
-    loading.value = true;
-
     try {
-        await register(name.value, email.value, password.value, passwordConfirmation.value)
+        await register({
+            name: name.value,
+            email: email.value,
+            password: password.value,
+            passwordConfirmation: passwordConfirmation.value
+        })
         void router.push({ name: 'login' });
 
     }
@@ -56,10 +58,7 @@ async function handleRegister() {
         }
 
 
-    } finally {
-        loading.value = false;
-
-    }
+    } 
 }
 </script>
 

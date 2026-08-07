@@ -25,19 +25,17 @@ import { useAuth } from '@/composables/useAuth';
 import { useRouter } from 'vue-router';
 import AuthFormShell from '@/components/organisms/AuthFormShell.vue';
 
-const { login } = useAuth();
+const { login, loading } = useAuth();
 const email = ref('');
 const password = ref('');
-const loading = ref(false);
 const errorMessage = ref('');
 const router = useRouter();
 
 async function handleLogin() {
     errorMessage.value = '';
-    loading.value = true;
 
     try {
-        await login(email.value, password.value)
+        await login({ email: email.value, password: password.value })
         void router.push({ name: 'home' });
 
     }
@@ -49,9 +47,6 @@ async function handleLogin() {
             errorMessage.value = 'Nao foi possivel fazer login'
         }
 
-
-    } finally {
-        loading.value = false;
 
     }
 }

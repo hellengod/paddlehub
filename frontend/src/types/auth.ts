@@ -4,7 +4,10 @@ export interface LoginResponse {
 }
 
 export type AuthStatus = 'unknown' | 'authenticated' | 'guest'
-
+export interface AuthState {
+    status: AuthStatus
+    user: User | null
+}
 export interface User {
     id: number,
     email: string,
@@ -17,4 +20,16 @@ export interface LogoutResponse {
 
 export interface RegisterResponse {
     message: string,
+}
+
+export interface RegisterPayload {
+    name: string,
+    email: string;
+    password: string;
+    passwordConfirmation: string;
+}
+
+export interface LoginPayload {
+    email: string;
+    password: string;
 }

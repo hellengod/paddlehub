@@ -10,7 +10,7 @@
     </aside>
 </template>
 <script setup lang="ts">
-import {useAuth} from '@/composables/useAuth';
+import { useAuth } from '@/composables/useAuth';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router'
 import HomeIcon from '@/components/atoms/icons/HomeIcon.vue';
@@ -21,10 +21,9 @@ import CommunityIcon from '@/components/atoms/icons/CommunityIcon.vue';
 import SidebarNavigation from '@/components/organisms/SidebarNavigation.vue';
 import SidebarFooter from '@/components/organisms/SidebarFooter.vue';
 
-const loading = ref(false);
 const errorMessage = ref('');
 const router = useRouter();
-const { logout } = useAuth();
+const { logout, loading } = useAuth();
 
 
 const menuItems = [
@@ -57,7 +56,6 @@ const menuItems = [
 
 async function handleLogout() {
     errorMessage.value = '';
-    loading.value = true;
     try {
         await logout();
         void router.push({ name: 'login' });
@@ -72,10 +70,8 @@ async function handleLogout() {
         }
 
 
-    } finally {
-        loading.value = false;
+    } 
 
-    }
 }
 </script>
 <style scoped>

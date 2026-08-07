@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AuthView from '@/views/AuthView.vue'
 import {useAuth} from '@/composables/useAuth.ts'
 
-const { authState, initializeAuth } = useAuth();
+const { status, isAuthenticated, initializeAuth } = useAuth();
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -85,15 +85,15 @@ router.beforeEach(async (to) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
   const guestOnly = to.matched.some((record) => record.meta.guestOnly)
 
-  if ((requiresAuth || guestOnly) && authState.status === 'unknown') {
+  if ((requiresAuth || guestOnly) && status.value === 'unknown') {
     await initializeAuth()
   }
 
-  if (requiresAuth && authState.status !== 'authenticated') {
+  if (requiresAuth && !isAuthenticated.value) {
     return { name: 'login' }
   }
 
-  if (guestOnly && authState.status === 'authenticated') {
+  if (guestOnly && isAuthenticated.value) {
     return { name: 'home' }
   }
 })
