@@ -23,8 +23,50 @@ class LoginTest extends TestCase
             ]);
 
         // Assert
-        $response->assertOk();
+        $response
+            ->assertOk()
+            ->assertJson([
+                'message' => 'Login realizado com sucesso',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ],
+            ]);
 
-        $this->assertAuthenticatedAs($user);
+        $this->assertAuthenticatedAs($user, 'web');
+    }
+
+    public function test_user_cannot_login_with_invalid_credentials(): void
+    {
+        $user = User::factory()->create();
+        $response = $this
+            ->withHeader('Origin', config('app.url'))
+            ->postJson('/api/login', [
+                'email' => $user->email,
+                'password' => 'senha',
+            ]);
+
+        $response
+            ->assertUnauthorized()
+            ->assertJson([
+                'message' => 'Usuario nao autenticado',
+            ]);
+
+        $this->assertGuest('web');
+    }
+    public function test_user_cannot_login_without_password(): void
+    {
+        $response = $this
+            ->withHeader('Origin', config('app.url'))
+            ->postJson('/api/login', [
+                'email' => 'hellen@email.com',
+            ]);
+
+        $response
+            ->assertUnprocessable()
+            ->assertInvalid(['password']);
+
+        $this->assertGuest('web');
     }
 }

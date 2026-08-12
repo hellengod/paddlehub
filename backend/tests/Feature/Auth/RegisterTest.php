@@ -31,4 +31,22 @@ class RegisterTest extends TestCase
             'email' => 'hellen@example.com',
         ]);
     }
+
+    public function test_user_cannot_register_without_email(): void
+    {
+        // Arrange
+        $data = [
+            'name' => 'Hellen',
+            'email' => '',
+            'password' => '12345678',
+            'password_confirmation' => '12345678',
+        ];
+
+        // Act
+        $response = $this->postJson('/api/register', $data);
+
+        // Assert
+        $response->assertUnprocessable()->assertInvalid(['email']);
+
+    }
 }
