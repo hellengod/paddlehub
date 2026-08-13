@@ -19,17 +19,24 @@ class UserTest extends TestCase
         $response
             ->assertOk()
             ->assertJson([
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
+                'message' => 'Usuário autenticado recuperado com sucesso',
+                'data' => [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                    ],
+                ],
             ])
             ->assertJsonStructure([
-                'id',
-                'name',
-                'email',
-                'email_verified_at',
-                'created_at',
-                'updated_at',
+                'message',
+                'data' => [
+                    'user' => [
+                        'id',
+                        'name',
+                        'email',
+                    ],
+                ],
             ]);
     }
 

@@ -27,12 +27,15 @@ class LoginTest extends TestCase
             ->assertOk()
             ->assertJson([
                 'message' => 'Login realizado com sucesso',
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
+                'data' => [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                    ],
                 ],
             ]);
+
 
         $this->assertAuthenticatedAs($user, 'web');
     }
