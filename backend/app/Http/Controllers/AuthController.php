@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Actions\Auth\LoginUser;
+use App\Actions\Auth\RegisterUser;
+use App\Http\Requests\Auth\RegisterRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Requests\Auth\LoginRequest;
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(LoginRequest $request, LoginUser $loginUser)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
 
-        if (Auth::attempt($credentials)) {
+        $credentials = $request->validated();
+        if ($loginUser->execute($credentials)) {
             $request->session()->regenerate();
 
         } else {
@@ -26,12 +25,14 @@ class AuthController extends Controller
 
         $user = Auth::user();
         return response()->json([
-            'message' => "Login realizado com sucesso",
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email
-            ]
+            'message' => 'Login realizado com sucesso',
+            'data' => [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ],
+            ],
         ]);
     }
 
@@ -43,25 +44,25 @@ class AuthController extends Controller
 
         $request->session()->regenerateToken();
         return response()->json([
-            'message' => "Logout realizado com sucesso",
+            'message' => 'Logout realizado com sucesso',
+            'data' => null,
         ]);
     }
 
-    public function register(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => ['required', 'string'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'min:6', 'confirmed'],
-        ]);
-
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => $validated['password']
-        ]);
+    public function register(
+        RegisterRequest $request,
+        RegisterUser $registerUser
+    ) {
+        $user = $registerUser->execute($request->validated());
         return response()->json([
-            'message' => "Cadastro realizado com sucesso"
+            'message' => 'Cadastro realizado com sucesso',
+            'data' => [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ],
+            ],
         ], 201);
 
     }
