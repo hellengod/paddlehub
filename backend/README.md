@@ -1,59 +1,252 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Backend Architecture Guide
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este backend vai seguir uma organizacao simples e repetivel.
+O objetivo e deixar cada nova feature previsivel, sem espalhar regra de negocio em controller e sem criar pastas genericas demais.
 
-## About Laravel
+## Fluxo padrao da API
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Toda feature HTTP deve seguir este fluxo:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+`route -> controller -> request -> action -> model/service -> response`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```mermaid
+flowchart LR
+  A["routes/api.php"] --> B["Controller"]
+  B --> C["FormRequest"]
+  B --> D["Action"]
+  D --> E["Model / Query / Service"]
+  B --> F["JSON response"]
+```
 
-## Learning Laravel
+Leitura rapida:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- `Controller` recebe a chamada e coordena o fluxo.
+- `Request` valida e autoriza a entrada.
+- `Action` executa o caso de uso.
+- `Service` entra apenas quando houver integracao externa ou logica tecnica reaproveitada.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Arvore que vamos seguir
 
-## Laravel Sponsors
+```text
+app/
+  Actions/
+    Auth/
+      LoginUser.php
+      RegisterUser.php
+    River/
+      CreateRiver.php
+      UpdateRiver.php
+  Http/
+    Controllers/
+      Auth/
+        AuthController.php
+      River/
+        RiverController.php
+    Requests/
+      Auth/
+        LoginRequest.php
+        RegisterRequest.php
+      River/
+        StoreRiverRequest.php
+        UpdateRiverRequest.php
+  Models/
+    User.php
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+tests/
+  Feature/
+    Auth/
+      LoginTest.php
+      RegisterTest.php
+    River/
+      CreateRiverTest.php
+      UpdateRiverTest.php
+  Unit/
+    Services/
+      GeocodingServiceTest.php
+```
 
-### Premium Partners
+Observacao:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- `Requests`, `Actions` e `tests` ja estao caminhando nesse formato.
+- A partir de agora, novos `Controllers` tambem devem ser separados por contexto (`Auth`, `River`, `Event`, `Post`).
+- Controllers antigos podem ser movidos quando forem tocados em refactor, sem pressa.
 
-## Contributing
+## Responsabilidade de cada camada
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Controllers
 
-## Code of Conduct
+Ficam em `app/Http/Controllers/{Contexto}`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Devem:
 
-## Security Vulnerabilities
+- receber o `Request`
+- chamar uma `Action` ou, em casos especificos, um `Service`
+- devolver a resposta HTTP/JSON
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Nao devem:
 
-## License
+- concentrar regra de negocio
+- validar campo manualmente
+- montar query complexa direto no metodo
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Requests
+
+Ficam em `app/Http/Requests/{Contexto}`.
+
+Devem concentrar:
+
+- `authorize()`
+- `rules()`
+- validacao da entrada daquele endpoint
+
+Regra pratica:
+
+- se a validacao muda, crie um novo `Request`
+- no controller, prefira sempre trabalhar com `$request->validated()`
+
+### Actions
+
+Ficam em `app/Actions/{Contexto}`.
+
+Papel:
+
+- representar um caso de uso claro do sistema
+- ter uma responsabilidade principal
+- expor um metodo publico padrao: `execute()`
+
+Exemplos de ideia:
+
+- `RegisterUser`
+- `CreateRiver`
+- `UpdateEvent`
+
+Regra pratica:
+
+- se a classe responde "o que o sistema faz", ela tende a ser `Action`
+
+### Services
+
+So devem existir quando fizer sentido criar `app/Services/...`.
+
+Use `Service` quando a classe representar:
+
+- integracao externa
+- regra tecnica compartilhada por mais de uma `Action`
+- orquestracao que nao pertence a um unico endpoint
+
+Exemplos de ideia:
+
+- `GeocodingService`
+- `MediaStorageService`
+
+Regra pratica:
+
+- se a classe responde "como algo tecnico acontece", ela tende a ser `Service`
+- se ela existe so para um caso de uso, prefira `Action`
+
+### Tests
+
+Ficam em `tests/Feature/{Contexto}` e `tests/Unit/...`.
+
+Padrao inicial:
+
+- `Feature` para testar comportamento da API
+- `Unit` apenas quando houver regra isolada o suficiente para valer teste unitario
+
+Regra pratica:
+
+- endpoint novo pede pelo menos um teste de `Feature`
+- regra tecnica isolada pode ganhar teste de `Unit`
+
+## Naming rules
+
+### Pastas
+
+- organizar por contexto de negocio
+- exemplos: `Auth`, `River`, `Event`, `Post`
+
+### Controllers
+
+- nome em `PascalCase`
+- sufixo `Controller`
+- exemplos: `AuthController`, `RiverController`
+
+Metodos:
+
+- CRUD: `index`, `show`, `store`, `update`, `destroy`
+- fluxos fora de CRUD: `login`, `register`, `logout`
+
+### Requests
+
+- nome em `PascalCase`
+- sufixo `Request`
+- preferir verbo + recurso quando for CRUD
+- exemplos: `StoreRiverRequest`, `UpdateRiverRequest`, `LoginRequest`
+
+### Actions
+
+- nome em `PascalCase`
+- verbo + recurso
+- manter sem sufixo `Action` por enquanto, porque o projeto ja comecou assim
+- exemplos: `LoginUser`, `RegisterUser`, `CreateRiver`
+
+Se no futuro quiser usar sufixo `Action`, a troca deve ser global para nao misturar estilos.
+
+### Services
+
+- nome em `PascalCase`
+- capacidade tecnica + sufixo `Service`
+- exemplos: `GeocodingService`, `ImageUploadService`
+
+### Tests
+
+- arquivo termina com `Test`
+- nome reflete o comportamento testado
+- exemplos: `LoginTest`, `RegisterTest`, `CreateRiverTest`
+
+Metodos de teste:
+
+- `test_user_can_create_river`
+- `test_guest_cannot_create_river`
+- `test_create_river_requires_name`
+
+### Rotas
+
+- recursos em plural: `/rivers`, `/events`, `/posts`
+- auth pode manter rotas orientadas a acao: `/login`, `/register`, `/logout`
+
+### Resposta JSON
+
+Padrao inicial para sucesso:
+
+```json
+{
+  "message": "Texto curto",
+  "data": {}
+}
+```
+
+Isso ajuda o frontend a consumir respostas com menos surpresa.
+
+## Checklist de nova feature
+
+1. Criar a rota em `routes/api.php`.
+2. Criar ou atualizar o controller do contexto.
+3. Criar um `FormRequest` se houver validacao propria.
+4. Criar uma `Action` para o caso de uso.
+5. Escrever teste de `Feature` para o endpoint.
+6. Criar `Service` apenas se houver necessidade tecnica real.
+
+## O que evitar
+
+- criar pastas genericas como `Helpers`, `Utils` ou `Misc`
+- colocar regra de negocio no controller
+- criar `Service` por reflexo quando uma `Action` resolve
+- misturar estilos de nome no mesmo contexto
+
+## Referencias oficiais
+
+- [Laravel: Directory Structure](https://laravel.com/docs/12.x/structure)
+- [Laravel: Controllers](https://laravel.com/docs/12.x/controllers)
+- [Laravel: Validation / Form Requests](https://laravel.com/docs/12.x/validation#form-request-validation)
+- [Laravel: HTTP Tests](https://laravel.com/docs/12.x/http-tests)
