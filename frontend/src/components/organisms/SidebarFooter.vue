@@ -1,7 +1,7 @@
 <template>
     <div class="sidebar-footer">
         <div class="perfil">
-            <SidebarProfileCard name="Hellen Bianchini" location="Rio Juquia, SP" avatar-url="/profile-user.svg"
+            <SidebarProfileCard name="Hellen Bianchini" location="Rio Juquia, SP"
                 route-name="perfil"></SidebarProfileCard>
         </div>
         <button @click="handleLogout" :disabled="loading" class="logout-button">
