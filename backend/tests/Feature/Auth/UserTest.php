@@ -25,6 +25,7 @@ class UserTest extends TestCase
                         'id' => $user->id,
                         'name' => $user->name,
                         'email' => $user->email,
+                        'avatarUrl' => null,
                     ],
                 ],
             ])
@@ -35,6 +36,7 @@ class UserTest extends TestCase
                         'id',
                         'name',
                         'email',
+                        'avatarUrl',
                     ],
                 ],
             ]);

@@ -25,7 +25,22 @@ class RegisterTest extends TestCase
         $response = $this->postJson('/api/register', $data);
 
         // Assert
-        $response->assertCreated();
+        $response
+            ->assertCreated()
+            ->assertJsonPath('message', 'Cadastro realizado com sucesso')
+            ->assertJsonPath('data.user.name', 'Hellen')
+            ->assertJsonPath('data.user.email', 'hellen@example.com')
+            ->assertJsonPath('data.user.avatarUrl', null)
+            ->assertJsonStructure([
+                'data' => [
+                    'user' => [
+                        'id',
+                        'name',
+                        'email',
+                        'avatarUrl',
+                    ],
+                ],
+            ]);
 
         $this->assertDatabaseHas('users', [
             'email' => 'hellen@example.com',
