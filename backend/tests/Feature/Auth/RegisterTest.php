@@ -30,14 +30,20 @@ class RegisterTest extends TestCase
             ->assertJsonPath('message', 'Cadastro realizado com sucesso')
             ->assertJsonPath('data.user.name', 'Hellen')
             ->assertJsonPath('data.user.email', 'hellen@example.com')
+            ->assertJsonPath('data.user.bio', null)
+            ->assertJsonPath('data.user.homeRiver', null)
             ->assertJsonPath('data.user.avatarUrl', null)
+            ->assertJsonPath('data.user.coverUrl', null)
             ->assertJsonStructure([
                 'data' => [
                     'user' => [
                         'id',
                         'name',
                         'email',
+                        'bio',
+                        'homeRiver',
                         'avatarUrl',
+                        'coverUrl',
                     ],
                 ],
             ]);

@@ -32,7 +32,10 @@ class LoginTest extends TestCase
                         'id' => $user->id,
                         'name' => $user->name,
                         'email' => $user->email,
+                        'bio' => null,
+                        'homeRiver' => null,
                         'avatarUrl' => null,
+                        'coverUrl' => null,
                     ],
                 ],
             ]);

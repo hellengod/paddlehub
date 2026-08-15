@@ -31,7 +31,10 @@ class AuthController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'bio' => $user->bio,
+                    'homeRiver' => $user->home_river,
                     'avatarUrl' => null,
+                    'coverUrl' => null,
                 ],
             ],
         ]);
@@ -62,7 +65,10 @@ class AuthController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'bio' => $user->bio,
+                    'homeRiver' => $user->home_river,
                     'avatarUrl' => null,
+                    'coverUrl' => null,
                 ],
             ],
         ], 201);
