@@ -33,6 +33,7 @@ import Sidebar from '@/components/organisms/Sidebar.vue';
     flex: 1;
     min-width: 0;
     position: relative;
+    min-height: calc(100vh - 20px);
 }
 
 .main {

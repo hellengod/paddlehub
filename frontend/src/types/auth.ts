@@ -21,7 +21,10 @@ export interface User {
     id: number,
     email: string,
     name: string,
+    bio: string | null,
+    homeRiver: string | null,
     avatarUrl: string | null,
+    coverUrl: string | null,
 }
 
 export interface RegisterPayload {

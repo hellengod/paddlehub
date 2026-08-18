@@ -1,89 +1,136 @@
-# JuquiPaddle – Rede Social de Canoagem 🛶
+# PaddleHub
 
-Projeto pessoal inspirado na vivência da equipe JuquiPaddle, criado com o objetivo de consolidar autonomia técnica no desenvolvimento fullstack utilizando **Vue.js** e **PHP**, simulando um projeto real com organização em sprints e Kanban.
+PaddleHub é uma aplicação web em desenvolvimento para a comunidade de canoagem e remada. O projeto foi pensado para reunir, em um único ambiente, autenticação de usuários, navegação por áreas temáticas e recursos voltados à descoberta de rios, organização de encontros e construção de comunidade.
 
-## 🎯 Objetivo
-Criar uma plataforma onde praticantes de kayak/canoagem possam:
-- Cadastrar rios já remados e rios que desejam conhecer
-- Visualizar esses rios em mapas
-- Criar e divulgar encontros de remada
-- Registrar experiências através de posts com fotos e vídeos
+## Visão geral
 
-Além do produto em si, o foco principal do projeto é o **desenvolvimento de autonomia**, tomada de decisões técnicas e boa comunicação de código.
+No estado atual, o projeto já possui uma base fullstack funcional com:
 
----
+- cadastro, login, logout e recuperação do usuário autenticado
+- área interna protegida por autenticação
+- layout principal com sidebar, topbar e navegação entre telas
+- tela de perfil com edição local de bio, rio base, capa e recorte de avatar
+- testes de API para o fluxo de autenticação
 
-## 🧠 Motivação técnica
-Este projeto está sendo desenvolvido com as seguintes diretrizes:
-- Código escrito 
-- Uso de documentação oficial e debug manual
-- IA utilizada apenas para **review e validação**
-- Organização do trabalho em **sprints** usando GitHub Projects
-- Commits pequenos e bem descritos
+As áreas de mapa, eventos, rios e comunidade já existem na navegação, mas ainda estão em fase inicial de implementação.
 
----
-
-## 🛠️ Stack inicial
-
-### Backend
-- PHP (Laravel)
-- API REST
-- Banco de dados: MySQL 
+## Stack
 
 ### Frontend
-- Vue.js 3
+
+- Vue 3
+- TypeScript
+- Vite
 - Vue Router
-- Consumo de API via HTTP
+- Axios
 
-### Outros
-- GitHub Projects para Kanban e sprints
-- Postman / Insomnia para testes de API
+### Backend
 
----
+- PHP 8.2
+- Laravel 12
+- Laravel Sanctum
+- PHPUnit
 
-## 📦 Escopo inicial (MVP)
+## Estrutura do repositório
 
-### Funcionalidades previstas no MVP:
-- Cadastro e listagem de rios com localização (latitude e longitude)
-- Marcação de rios como:
-  - ✅ Já fui
-  - ⭐ Quero conhecer
-- Visualização desses rios em mapas
-- Criação e listagem de encontros de remada
-- Criação de posts simples com texto e mídia
-- Feed básico de posts
+```text
+Paddlehub/
+  backend/   API Laravel, autenticação, rotas e testes
+  frontend/  aplicação Vue com interface e consumo da API
+  docs/      documentação de estudo e decisões de interface
+```
 
----
+## Funcionalidades já presentes
 
-## 🚫 Fora de escopo (por enquanto)
-As funcionalidades abaixo **não fazem parte do MVP inicial**:
-- Comentários e curtidas
-- Sistema de seguidores
-- Chat
-- Notificações em tempo real
-- Moderação avançada
-- Geolocalização automática
+### Autenticação
 
-Esses itens poderão ser avaliados em fases futuras.
+O backend já expõe endpoints para cadastro, login, logout e consulta do usuário autenticado. No frontend, esse fluxo é consumido por um composable dedicado, com controle de estado e proteção de rotas.
 
----
+### Área autenticada
 
-## 🗂️ Organização do projeto
-O desenvolvimento é organizado em **sprints semanais**, utilizando um quadro Kanban no GitHub Projects com as seguintes colunas:
-- Backlog
-- Ready
-- In Progress
-- In review
-- Done
+Depois do login, o usuário acessa uma área interna com:
 
-Cada funcionalidade é quebrada em tarefas pequenas e fecháveis.
+- home
+- mapa
+- eventos
+- rios
+- comunidade
+- perfil
 
----
+### Perfil
 
-## 🚀 Status do projeto
-🔧 Em desenvolvimento – Sprint 1 (Fundação)
+A tela de perfil é o trecho mais avançado da interface neste momento. Ela já permite:
 
----
+- exibir nome, bio, rio base, avatar e capa
+- abrir modal de edição do perfil
+- selecionar capa com pré-visualização local
+- selecionar avatar e ajustar o recorte antes de aplicar
 
-## 📄 Licença
-Projeto pessoal para fins educacionais e de portfólio.
+Neste estágio, as alterações visuais do perfil ainda ficam no frontend e não são persistidas no backend.
+
+## Endpoints disponíveis
+
+```text
+POST /api/register
+POST /api/login
+POST /api/logout
+GET  /api/user
+```
+
+## Como executar o projeto
+
+### 1. Backend
+
+Na pasta `backend/`:
+
+```bash
+composer install
+copy .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
+```
+
+Se preferir usar o fluxo definido no `composer.json`, também é possível iniciar o ambiente com:
+
+```bash
+composer dev
+```
+
+Antes de rodar, ajuste o arquivo `.env` com a configuração de banco de dados da sua máquina.
+
+### 2. Frontend
+
+Na pasta `frontend/`:
+
+```bash
+npm install
+npm run dev
+```
+
+O frontend consome a API usando a variável `VITE_API_BASE_URL`. Se necessário, configure esse valor no `.env` do frontend apontando para a URL do backend local, por exemplo:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000/
+```
+
+## Documentação interna
+
+O repositório já possui materiais de apoio para entendimento da arquitetura e da interface:
+
+- `backend/README.md`
+- `docs/profile-view-study-spec.md`
+- `docs/profile-avatar-crop-study-spec.md`
+- `docs/profile-avatar-crop-modal-study-spec.md`
+
+## Próximas etapas
+
+Os próximos blocos naturais de evolução do projeto são:
+
+- persistência real dos dados de perfil no backend
+- implementação das telas de rios, mapa, eventos e comunidade
+- expansão da cobertura de testes além da autenticação
+
+## Licença
+
+Projeto em desenvolvimento para estudo, prática e portfólio.

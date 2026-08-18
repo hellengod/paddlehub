@@ -68,7 +68,8 @@ const props = defineProps<SidebarProfileCardProps>();
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-text-secondary);
+    background: var(--color-text-primary);
+    color: var(--color-bg-panel);
 }
 
 .avatar-fallback :deep(svg) {
