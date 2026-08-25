@@ -32,4 +32,18 @@ p {
     font-size: 18px;
     color: var(--color-text-secondary);
 }
+
+@media (max-width: 480px) {
+    .text-container {
+        margin-bottom: 24px;
+    }
+
+    h1 {
+        font-size: clamp(28px, 9vw, 42px);
+    }
+
+    p {
+        font-size: 17px;
+    }
+}
 </style>

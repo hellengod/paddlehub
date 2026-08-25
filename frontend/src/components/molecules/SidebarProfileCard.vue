@@ -2,7 +2,10 @@
     <div class="profile-card">
         <div class="header">
             <div class="avatar">
-                <img :src="props.avatarUrl" :alt="props.name">
+                <img v-if="props.avatarUrl" :src="props.avatarUrl" :alt="props.name">
+                <span v-else class="avatar-fallback" aria-hidden="true">
+                    <ProfileUser></ProfileUser>
+                </span>
             </div>
             <div class="text-block">
                 <div class="name">{{ props.name }}</div>
@@ -16,10 +19,12 @@
 </template>
 
 <script setup lang="ts">
+import ProfileUser from '@/components/atoms/icons/ProfileUser.vue';
+
 interface SidebarProfileCardProps {
     name: string;
     location: string;
-    avatarUrl: string;
+    avatarUrl?: string | null;
     routeName: string;
 }
 
@@ -50,10 +55,27 @@ const props = defineProps<SidebarProfileCardProps>();
     overflow: hidden;
 }
 
-img {
+.avatar img {
     width: 100%;
     height: 100%;
-    object-fit: cover
+    object-fit: cover;
+    display: block;
+}
+
+.avatar-fallback {
+    width: 100%;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-text-primary);
+    color: var(--color-bg-panel);
+}
+
+.avatar-fallback :deep(svg) {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 .text-block {

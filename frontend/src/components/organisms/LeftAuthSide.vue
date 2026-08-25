@@ -69,4 +69,81 @@ p {
     gap: var(--space-3);
     margin-top: 70px;
 }
+
+@media (max-width: 768px) {
+    .container-left {
+        min-height: 402px;
+        display: flex;
+        align-items: flex-start;
+        background-image:
+            linear-gradient(180deg, rgba(1, 9, 15, 0.82) 0%, rgba(1, 9, 15, 0.48) 44%, rgba(1, 10, 18, 0.92) 100%),
+            url(/img-fundo-login.png);
+    }
+
+    .container-left::before {
+        background:
+            radial-gradient(circle at 78% 62%, rgba(54, 201, 193, 0.2), transparent 28%),
+            linear-gradient(180deg, rgba(2, 11, 16, 0.24) 0%, rgba(2, 11, 16, 0.56) 100%);
+    }
+
+    .logo-grande {
+        width: min(248px, 62vw);
+        margin-bottom: -76px;
+    }
+
+    .content {
+        gap: 14px;
+        padding: 0 20px 78px 28px;
+        max-width: 372px;
+    }
+
+    h1 {
+        font-size: clamp(31px, 7.6vw, 42px);
+        line-height: 1.08;
+        max-width: none;
+        margin-left: 8px;
+    }
+
+    p {
+        font-size: clamp(15px, 3.5vw, 17px);
+        line-height: 1.5;
+        max-width: none;
+        margin-left: 8px;
+    }
+
+    p br {
+        display: none;
+    }
+
+    .cards {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .container-left {
+        min-height: 358px;
+    }
+
+    .content {
+        gap: 12px;
+        padding: 0 16px 62px 22px;
+        max-width: 348px;
+    }
+
+    .logo-grande {
+        width: min(220px, 58vw);
+        margin-bottom: -50px;
+    }
+
+    h1 {
+        font-size: clamp(28px, 7.9vw, 34px);
+        margin-left: 6px;
+    }
+
+    p {
+        font-size: 15px;
+        margin-left: 6px;
+    }
+}
 </style>

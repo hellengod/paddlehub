@@ -4,9 +4,9 @@
         footerLinkText="Criar conta" footerTo="/cadastro" @submit="handleLogin">
 
         <BaseInput label="E-mail" type="email" placeholder="seu@email.com" v-model="email"
-            icon=".\letter-svgrepo-com.svg" />
+            icon="/letter-svgrepo-com.svg" />
         <BaseInput label="Senha" type="password" placeholder="Digite sua senha" v-model="password"
-            icon=".\padlock-outlined-svgrepo-com.svg" />
+            icon="/padlock-outlined-svgrepo-com.svg" />
 
         <template #actions>
             <label class="remember-me">
@@ -14,7 +14,7 @@
                 <span>Lembrar de mim</span>
             </label>
 
-            <a href="" class="forgot-password">Esqueci minha senha</a>
+            <a href="#" class="forgot-password" @click.prevent>Esqueci minha senha</a>
         </template>
     </AuthFormShell>
 </template>
@@ -58,7 +58,7 @@ async function handleLogin() {
     display: flex;
     align-items: center;
     gap: 8px;
-
+    color: var(--color-text-primary);
 }
 
 .remember-me input[type="checkbox"] {
@@ -70,5 +70,12 @@ async function handleLogin() {
 .forgot-password {
     color: var(--color-accent-primary);
     text-decoration: none;
+}
+
+@media (max-width: 640px) {
+    .remember-me,
+    .forgot-password {
+        font-size: 16px;
+    }
 }
 </style>

@@ -1,10 +1,16 @@
 <template>
   <div class="container">
-    <label for="input"> {{ props.label }}</label>
+    <label :style="{ color: props.labelColor }">{{ props.label }}</label>
     <div class="input-wrapper">
-      <img :src="props.icon" class="icon" />
+      <img v-if="props.icon" :src="props.icon" class="icon" alt="" aria-hidden="true" />
       <input :type="props.type" :placeholder="props.placeholder" :value="props.modelValue" @input="handleInput"
-        class="input">
+        class="input" :class="{ 'input--with-icon': props.icon }" :style="{
+          height: props.height,
+          fontSize: props.fontSize,
+          backgroundColor: props.backgroundColor,
+          borderColor: props.borderColor,
+          color: props.textColor
+        }">
     </div>
   </div>
 </template>
@@ -15,9 +21,23 @@ interface BaseInputProps {
   placeholder: string;
   modelValue: string;
   icon?: string
+  height?: string
+  fontSize?: string
+  backgroundColor?: string
+  borderColor?: string
+  textColor?: string
+  labelColor?: string
 }
 
-const props = defineProps<BaseInputProps>();
+const props = withDefaults(defineProps<BaseInputProps>(), {
+  icon: undefined,
+  height: '54px',
+  fontSize: '17px',
+  backgroundColor: 'transparent',
+  borderColor: 'var(--color-border-subtle)',
+  textColor: 'var(--color-text-primary)',
+  labelColor: 'var(--color-text-muted)'
+});
 const emit = defineEmits(['update:modelValue']);
 function handleInput(event: Event) {
   const value = (event.target as HTMLInputElement).value;
@@ -36,14 +56,14 @@ function handleInput(event: Event) {
 }
 
 .input {
-  height: 54px;
-  background-color: transparent;
   border-radius: var(--radius-sm);
   border: 2px solid var(--color-border-subtle);
-  font-size: 17px;
   width: 100%;
+  padding: 0 16px;
+}
+
+.input--with-icon {
   padding-left: 48px;
-  color: var(--color-text-primary);
 }
 
 .input-wrapper {
@@ -60,7 +80,4 @@ function handleInput(event: Event) {
   width: 28px;
 }
 
-label {
-  color: var(--color-text-muted);
-}
 </style>

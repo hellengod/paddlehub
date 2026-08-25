@@ -4,13 +4,13 @@
         footerHelperText="Ja tem uma conta?" footerLinkText="Entrar" footerTo="/" @submit="handleRegister">
 
         <BaseInput label="Nome" type="text" placeholder="Seu nome completo" v-model="name"
-            icon="./user-svgrepo-com.svg" />
+            icon="/user-svgrepo-com.svg" />
         <BaseInput label="E-mail" type="email" placeholder="seu@email.com" v-model="email"
-            icon=".\letter-svgrepo-com.svg" />
+            icon="/letter-svgrepo-com.svg" />
         <BaseInput label="Senha" type="password" placeholder="Digite sua senha" v-model="password"
-            icon=".\padlock-outlined-svgrepo-com.svg" />
+            icon="/padlock-outlined-svgrepo-com.svg" />
         <BaseInput label="Confirmar Senha" type="password" placeholder="Confirme sua senha"
-            v-model="passwordConfirmation" icon=".\padlock-outlined-svgrepo-com.svg" />
+            v-model="passwordConfirmation" icon="/padlock-outlined-svgrepo-com.svg" />
 
         <template #actions>
             <label class="remember-me">
@@ -67,12 +67,19 @@ async function handleRegister() {
     display: flex;
     align-items: center;
     gap: 8px;
-
+    color: var(--color-text-primary);
 }
 
 .remember-me input[type="checkbox"] {
     width: 20px;
     height: 20px;
     accent-color: var(--color-action-primary);
+}
+
+@media (max-width: 640px) {
+    .remember-me {
+        font-size: 16px;
+        line-height: 1.5;
+    }
 }
 </style>

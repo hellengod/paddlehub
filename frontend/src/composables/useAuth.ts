@@ -1,6 +1,6 @@
 import apiClient from "@/services/apiClient";
 import { computed, reactive, ref } from "vue";
-import type { AuthState, LoginPayload, LoginResponse, LogoutResponse, RegisterPayload, RegisterResponse, User } from "@/types/auth";
+import type { AuthState, CurrentUserResponse, LoginPayload, LoginResponse, LogoutResponse, RegisterPayload, RegisterResponse, User } from "@/types/auth";
 
 const authState = reactive<AuthState>({
     status: 'unknown',
@@ -36,8 +36,8 @@ export function useAuth() {
 
         authRequest = (async () => {
             try {
-                const response = await apiClient.get<User>('api/user');
-                setAuthenticated(response.data);
+                const response = await apiClient.get<CurrentUserResponse>('api/user');
+                setAuthenticated(response.data.data.user);
                 return true;
             } catch {
                 setGuest();
@@ -61,7 +61,7 @@ export function useAuth() {
                 "password": payload.password
             });
 
-            setAuthenticated(response.data.user);
+            setAuthenticated(response.data.data.user);
             return response.data;
         } catch {
             throw new Error("Nao foi possivel realizar o login")
