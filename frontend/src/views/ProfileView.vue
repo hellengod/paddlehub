@@ -6,7 +6,7 @@
                 <p>Acompanhe seu progresso na comunidade PaddleHub.</p>
             </header>
 
-            <section class="profile-hero">
+            <section ref="profileHeroRef" class="profile-hero">
                 <img class="cover-image" :class="{ 'cover-image--fallback': !hasCustomCover }" :src="coverSrc"
                     alt="Capa do perfil">
                 <div class="cover-overlay"></div>
@@ -50,6 +50,7 @@
 
         <ProfileEditModal :model-value="isProfileEditorOpen" :cover-src="coverSrc" :has-custom-cover="hasCustomCover"
             :home-river="draftHomeRiver" :bio="draftBio" :cover-selection-text="coverSelectionText"
+            :cover-aspect-ratio="profileHeroAspectRatio"
             @update:modelValue="handleProfileEditorToggle" @update:homeRiver="draftHomeRiver = $event"
             @update:bio="draftBio = $event" @select-cover="handleCoverSelection" @cancel="closeProfileEditor"
             @save="applyProfileChanges">
@@ -63,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import PencilIcon from '@/components/atoms/icons/PencilIcon.vue';
 import ProfileUser from '@/components/atoms/icons/ProfileUser.vue';
 import ProfileAvatarCropModal from '@/components/organisms/ProfileAvatarCropModal.vue';
@@ -71,9 +72,11 @@ import ProfileEditModal from '@/components/organisms/ProfileEditModal.vue';
 import { useAuth } from '@/composables/useAuth';
 
 const defaultCoverSrc = '/profile-cover-default.png';
+const DEFAULT_PROFILE_HERO_ASPECT_RATIO = 4;
 
 const { user } = useAuth();
 const avatarInputRef = ref<HTMLInputElement | null>(null);
+const profileHeroRef = ref<HTMLElement | null>(null);
 const isAvatarCropModalOpen = ref(false);
 const isProfileEditorOpen = ref(false);
 const avatarCropSource = ref('');
@@ -88,6 +91,7 @@ const draftCoverObjectUrl = ref<string | null>(null);
 const draftBio = ref('');
 const draftHomeRiver = ref('');
 const draftCoverUrl = ref<string | null>(null);
+const profileHeroAspectRatio = ref(DEFAULT_PROFILE_HERO_ASPECT_RATIO);
 
 const currentProfileBio = computed(() => profileBioOverride.value ?? user.value?.bio ?? '');
 const currentHomeRiver = computed(() => profileHomeRiverOverride.value ?? user.value?.homeRiver ?? '');
@@ -157,7 +161,7 @@ function closeProfileEditor() {
     isProfileEditorOpen.value = false;
 }
 
-function handleCoverSelection(file: File) {
+function handleCoverSelection(file: Blob) {
     if (draftCoverObjectUrl.value) {
         URL.revokeObjectURL(draftCoverObjectUrl.value);
     }
@@ -228,7 +232,27 @@ function resetPendingAvatarSelection() {
     }
 }
 
+function measureProfileHero() {
+    const heroElement = profileHeroRef.value;
+
+    if (!heroElement || !heroElement.clientWidth || !heroElement.clientHeight) {
+        return;
+    }
+
+    profileHeroAspectRatio.value = heroElement.clientWidth / heroElement.clientHeight;
+}
+
+onMounted(() => {
+    void nextTick(() => {
+        measureProfileHero();
+    });
+});
+
+window.addEventListener('resize', measureProfileHero);
+
 onBeforeUnmount(() => {
+    window.removeEventListener('resize', measureProfileHero);
+
     if (pendingAvatarSelectionUrl.value) {
         URL.revokeObjectURL(pendingAvatarSelectionUrl.value);
     }
