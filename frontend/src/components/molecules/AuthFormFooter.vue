@@ -50,6 +50,17 @@ const props = defineProps<AuthFormFooterProps>()
 
 .link-icon {
     width: 30px;
+}
 
+@media (max-width: 480px) {
+    .footer-content {
+        flex-wrap: wrap;
+        gap: 8px 14px;
+        font-size: 16px;
+    }
+
+    .link-icon {
+        width: 24px;
+    }
 }
 </style>
