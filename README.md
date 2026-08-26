@@ -37,7 +37,6 @@ As áreas de mapa, eventos, rios e comunidade já existem na navegação, mas ai
 Paddlehub/
   backend/   API Laravel, autenticação, rotas e testes
   frontend/  aplicação Vue com interface e consumo da API
-  docs/      documentação de estudo e decisões de interface
 ```
 
 ## Funcionalidades já presentes
@@ -113,23 +112,6 @@ O frontend consome a API usando a variável `VITE_API_BASE_URL`. Se necessário,
 ```env
 VITE_API_BASE_URL=http://127.0.0.1:8000/
 ```
-
-## Documentação interna
-
-O repositório já possui materiais de apoio para entendimento da arquitetura e da interface:
-
-- `backend/README.md`
-- `docs/profile-view-study-spec.md`
-- `docs/profile-avatar-crop-study-spec.md`
-- `docs/profile-avatar-crop-modal-study-spec.md`
-
-## Próximas etapas
-
-Os próximos blocos naturais de evolução do projeto são:
-
-- persistência real dos dados de perfil no backend
-- implementação das telas de rios, mapa, eventos e comunidade
-- expansão da cobertura de testes além da autenticação
 
 ## Licença
 
