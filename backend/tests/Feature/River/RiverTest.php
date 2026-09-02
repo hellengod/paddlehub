@@ -17,7 +17,17 @@ class RiverTest extends TestCase
             'name' => 'Rio do Peixe',
             'city' => 'Socorro',
             'state' => 'SP',
+            'start_latitude' => -22.5904,
+            'start_longitude' => -46.5251,
+            'end_latitude' => -22.6412,
+            'end_longitude' => -46.6124,
         ]);
+        $expectedExtensionKm = River::calculateDistanceKm(
+            -22.5904,
+            -46.5251,
+            -22.6412,
+            -46.6124,
+        );
 
         $response = $this
             ->withHeader('Origin', config('app.url'))
@@ -31,6 +41,7 @@ class RiverTest extends TestCase
             ->assertJsonPath('data.rivers.0.name', 'Rio do Peixe')
             ->assertJsonPath('data.rivers.0.city', 'Socorro')
             ->assertJsonPath('data.rivers.0.state', 'SP')
+            ->assertJsonPath('data.rivers.0.extensionKm', $expectedExtensionKm)
             ->assertJsonPath('data.rivers.0.createdBy.id', $river->created_by)
             ->assertJsonPath('data.rivers.0.createdBy.name', $river->creator->name);
     }
@@ -49,7 +60,15 @@ class RiverTest extends TestCase
                 'description' => 'Trecho inicial mapeado para a primeira versao do cadastro.',
                 'start_latitude' => -21.7642,
                 'start_longitude' => -43.3496,
+                'end_latitude' => -21.8012,
+                'end_longitude' => -43.4123,
             ]);
+        $expectedExtensionKm = River::calculateDistanceKm(
+            -21.7642,
+            -43.3496,
+            -21.8012,
+            -43.4123,
+        );
 
         $response
             ->assertCreated()
@@ -58,6 +77,7 @@ class RiverTest extends TestCase
             ])
             ->assertJsonPath('data.river.name', 'Rio Paraibuna')
             ->assertJsonPath('data.river.state', 'MG')
+            ->assertJsonPath('data.river.extensionKm', $expectedExtensionKm)
             ->assertJsonPath('data.river.createdBy.id', $user->id)
             ->assertJsonPath('data.river.createdBy.name', $user->name);
 
@@ -65,6 +85,8 @@ class RiverTest extends TestCase
             'name' => 'Rio Paraibuna',
             'city' => 'Juiz de Fora',
             'state' => 'MG',
+            'end_latitude' => -21.8012,
+            'end_longitude' => -43.4123,
             'created_by' => $user->id,
         ]);
     }
@@ -88,6 +110,8 @@ class RiverTest extends TestCase
                 'state' => 'SP',
                 'start_latitude' => -22.591,
                 'start_longitude' => -46.523,
+                'end_latitude' => -22.603,
+                'end_longitude' => -46.541,
             ]);
 
         $response->assertUnauthorized();
@@ -105,6 +129,8 @@ class RiverTest extends TestCase
                 'state' => 'Sao Paulo',
                 'start_latitude' => 130,
                 'start_longitude' => -300,
+                'end_latitude' => 95,
+                'end_longitude' => -250,
             ]);
 
         $response
@@ -115,6 +141,31 @@ class RiverTest extends TestCase
                 'state',
                 'start_latitude',
                 'start_longitude',
+                'end_latitude',
+                'end_longitude',
+            ]);
+    }
+
+    public function test_store_validates_distinct_start_and_end_points(): void
+    {
+        $this->authenticateUser();
+
+        $response = $this
+            ->withHeader('Origin', config('app.url'))
+            ->postJson('/api/rivers', [
+                'name' => 'Rio Duplicado',
+                'city' => 'Socorro',
+                'state' => 'SP',
+                'start_latitude' => -22.591,
+                'start_longitude' => -46.523,
+                'end_latitude' => -22.591,
+                'end_longitude' => -46.523,
+            ]);
+
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'end_latitude',
             ]);
     }
 }

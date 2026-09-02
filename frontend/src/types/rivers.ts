@@ -14,14 +14,15 @@ export interface River {
     description: string | null;
     startLatitude: number;
     startLongitude: number;
+    endLatitude: number | null;
+    endLongitude: number | null;
+    extensionKm: number;
     createdBy: RiverAuthor;
     createdAt: string | null;
 }
 
 export interface RiverCatalogCard extends River {
     displayDifficultyClass: string;
-    extensionKm: number;
-    trailLabel: string;
     rating: number;
     reviewCount: number;
     regionLabel: string;
@@ -43,6 +44,8 @@ export interface RiverCreateFormValues {
     description: string;
     startLatitude: number | null;
     startLongitude: number | null;
+    endLatitude: number | null;
+    endLongitude: number | null;
 }
 
 export interface RiverListData {
@@ -64,4 +67,6 @@ export interface RiverPayload {
     description: string | null;
     start_latitude: number;
     start_longitude: number;
+    end_latitude: number;
+    end_longitude: number;
 }

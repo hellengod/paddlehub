@@ -65,19 +65,14 @@ const activeFilters = reactive<RiverCatalogFilters>({
 
 const riverCards = computed<RiverCatalogCard[]>(() =>
     rivers.value.map((river, index) => {
-        const distanceSeed = ((river.id * 17) + Math.abs(Math.round(river.startLatitude * 10))) % 86;
-        const extensionKm = Math.max(12, distanceSeed + 12);
         const displayDifficultyClass =
             river.difficultyClass ?? difficultyOptions[index % difficultyOptions.length] ?? 'Classe II';
-        const trailLabel = getTrailLabel(displayDifficultyClass);
         const rating = 4.4 + (((river.id + index) % 6) / 10);
         const reviewCount = 64 + ((river.id * 29) % 112);
 
         return {
             ...river,
             displayDifficultyClass,
-            extensionKm,
-            trailLabel,
             rating,
             reviewCount,
             regionLabel: river.state,
@@ -105,22 +100,6 @@ const filteredRivers = computed(() =>
         return matchesSearch && matchesRegion && matchesDifficulty && matchesDistance && matchesRating;
     })
 );
-
-function getTrailLabel(difficultyClass: string) {
-    if (difficultyClass === 'Classe I' || difficultyClass === 'Classe II') {
-        return 'Trilha facil';
-    }
-
-    if (difficultyClass === 'Classe III') {
-        return 'Trilha moderada';
-    }
-
-    if (difficultyClass === 'Classe IV') {
-        return 'Trilha dificil';
-    }
-
-    return 'Trilha tecnica';
-}
 
 function initializeFavorites(items: RiverCatalogCard[]) {
     if (favoriteIds.value.size > 0 || items.length === 0) {
@@ -179,6 +158,8 @@ async function handleCreateRiver(formValues: RiverCreateFormValues) {
             description: formValues.description.trim() || null,
             start_latitude: formValues.startLatitude as number,
             start_longitude: formValues.startLongitude as number,
+            end_latitude: formValues.endLatitude as number,
+            end_longitude: formValues.endLongitude as number,
         });
 
         initializeFavorites(riverCards.value);
@@ -218,8 +199,6 @@ onMounted(() => {
 }
 
 .results-panel {
-    border: 1px solid rgba(127, 185, 215, 0.12);
-    border-radius: 14px;
     background: linear-gradient(180deg, rgba(6, 21, 31, 0.98) 0%, rgba(4, 18, 28, 0.98) 100%);
     padding: 12px 14px 14px;
 }

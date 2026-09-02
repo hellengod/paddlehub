@@ -1,6 +1,6 @@
 <template>
     <BaseModal :model-value="props.modelValue" title="Cadastrar rio"
-        description="Escolha o ponto inicial no mapa e complete os dados principais do rio." max-width="860px"
+        description="Marque a entrada e a saida no mapa para calcular a extensao do trecho." max-width="860px"
         @update:modelValue="handleModalVisibilityChange">
         <form class="create-river-form" @submit.prevent="handleSubmit">
             <div class="create-river-grid">
@@ -36,8 +36,22 @@
                     border-color="var(--color-border-subtle)" text-color="var(--color-text-primary)" :rows="4"
                     min-height="112px" />
 
-                <RiverLocationPicker :latitude="createForm.startLatitude" :longitude="createForm.startLongitude"
-                    @update:latitude="handleLatitudeSelection" @update:longitude="handleLongitudeSelection" />
+                <RiverLocationPicker
+                    :start-latitude="createForm.startLatitude"
+                    :start-longitude="createForm.startLongitude"
+                    :end-latitude="createForm.endLatitude"
+                    :end-longitude="createForm.endLongitude"
+                    @update:startLatitude="handleStartLatitudeSelection"
+                    @update:startLongitude="handleStartLongitudeSelection"
+                    @update:endLatitude="handleEndLatitudeSelection"
+                    @update:endLongitude="handleEndLongitudeSelection"
+                />
+
+                <div class="distance-preview" :class="{ 'distance-preview--complete': estimatedExtensionKm !== null }">
+                    <div class="distance-preview__label">Extensao estimada do trecho</div>
+                    <strong v-if="estimatedExtensionKm !== null">{{ formatDistance(estimatedExtensionKm) }} km</strong>
+                    <p v-else>Selecione a entrada e a saida para calcular automaticamente.</p>
+                </div>
             </div>
 
             <div v-if="combinedErrorMessage" class="modal-feedback modal-feedback--error">
@@ -104,6 +118,23 @@ const emit = defineEmits<{
 const createForm = reactive(createEmptyForm());
 const localErrorMessage = ref('');
 const combinedErrorMessage = computed(() => localErrorMessage.value || props.errorMessage);
+const estimatedExtensionKm = computed(() => {
+    if (
+        createForm.startLatitude === null
+        || createForm.startLongitude === null
+        || createForm.endLatitude === null
+        || createForm.endLongitude === null
+    ) {
+        return null;
+    }
+
+    return calculateDistanceKm(
+        createForm.startLatitude,
+        createForm.startLongitude,
+        createForm.endLatitude,
+        createForm.endLongitude,
+    );
+});
 
 watch(
     () => props.modelValue,
@@ -123,6 +154,8 @@ function createEmptyForm(): RiverCreateFormValues {
         description: '',
         startLatitude: null,
         startLongitude: null,
+        endLatitude: null,
+        endLongitude: null,
     };
 }
 
@@ -139,13 +172,23 @@ function handleModalVisibilityChange(isOpen: boolean) {
     emit('update:modelValue', isOpen);
 }
 
-function handleLatitudeSelection(latitude: number | null) {
+function handleStartLatitudeSelection(latitude: number | null) {
     createForm.startLatitude = latitude;
     localErrorMessage.value = '';
 }
 
-function handleLongitudeSelection(longitude: number | null) {
+function handleStartLongitudeSelection(longitude: number | null) {
     createForm.startLongitude = longitude;
+    localErrorMessage.value = '';
+}
+
+function handleEndLatitudeSelection(latitude: number | null) {
+    createForm.endLatitude = latitude;
+    localErrorMessage.value = '';
+}
+
+function handleEndLongitudeSelection(longitude: number | null) {
+    createForm.endLongitude = longitude;
     localErrorMessage.value = '';
 }
 
@@ -153,7 +196,20 @@ function handleSubmit() {
     localErrorMessage.value = '';
 
     if (createForm.startLatitude === null || createForm.startLongitude === null) {
-        localErrorMessage.value = 'Selecione o ponto inicial do rio no mapa antes de salvar.';
+        localErrorMessage.value = 'Selecione o ponto de entrada do rio no mapa antes de salvar.';
+        return;
+    }
+
+    if (createForm.endLatitude === null || createForm.endLongitude === null) {
+        localErrorMessage.value = 'Selecione o ponto de saida do rio no mapa antes de salvar.';
+        return;
+    }
+
+    if (
+        createForm.startLatitude === createForm.endLatitude
+        && createForm.startLongitude === createForm.endLongitude
+    ) {
+        localErrorMessage.value = 'O ponto de saida precisa ser diferente do ponto de entrada.';
         return;
     }
 
@@ -165,7 +221,37 @@ function handleSubmit() {
         description: createForm.description,
         startLatitude: createForm.startLatitude,
         startLongitude: createForm.startLongitude,
+        endLatitude: createForm.endLatitude,
+        endLongitude: createForm.endLongitude,
     });
+}
+
+function calculateDistanceKm(
+    startLatitude: number,
+    startLongitude: number,
+    endLatitude: number,
+    endLongitude: number,
+) {
+    const earthRadiusKm = 6371;
+    const latitudeDelta = toRadians(endLatitude - startLatitude);
+    const longitudeDelta = toRadians(endLongitude - startLongitude);
+    const startLatitudeRadians = toRadians(startLatitude);
+    const endLatitudeRadians = toRadians(endLatitude);
+    const a =
+        Math.sin(latitudeDelta / 2) ** 2
+        + Math.cos(startLatitudeRadians) * Math.cos(endLatitudeRadians) * Math.sin(longitudeDelta / 2) ** 2;
+    const normalizedA = Math.min(1, Math.max(0, a));
+    const distance = 2 * earthRadiusKm * Math.asin(Math.sqrt(normalizedA));
+
+    return Number(distance.toFixed(1));
+}
+
+function toRadians(value: number) {
+    return (value * Math.PI) / 180;
+}
+
+function formatDistance(value: number) {
+    return value.toFixed(1);
 }
 </script>
 
@@ -236,6 +322,41 @@ function handleSubmit() {
     border: 1px solid rgba(255, 115, 115, 0.3);
     background: rgba(113, 24, 24, 0.35);
     color: #ffd4d4;
+}
+
+.distance-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 16px;
+    border: 1px solid rgba(58, 212, 203, 0.12);
+    border-radius: 14px;
+    background: rgba(7, 20, 29, 0.78);
+}
+
+.distance-preview--complete {
+    border-color: rgba(58, 212, 203, 0.26);
+    background: linear-gradient(180deg, rgba(9, 30, 40, 0.9) 0%, rgba(7, 23, 33, 0.82) 100%);
+}
+
+.distance-preview__label {
+    color: rgba(240, 248, 255, 0.76);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.distance-preview strong {
+    color: var(--color-text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.distance-preview p {
+    color: var(--color-text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.45;
 }
 
 .modal-action--ghost:hover {

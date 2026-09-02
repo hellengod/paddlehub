@@ -24,6 +24,9 @@ class RiverResource extends JsonResource
             'description' => $this->description,
             'startLatitude' => (float) $this->start_latitude,
             'startLongitude' => (float) $this->start_longitude,
+            'endLatitude' => $this->end_latitude !== null ? (float) $this->end_latitude : null,
+            'endLongitude' => $this->end_longitude !== null ? (float) $this->end_longitude : null,
+            'extensionKm' => $this->resource->extensionKm(),
             'createdBy' => [
                 'id' => $this->creator?->id,
                 'name' => $this->creator?->name,

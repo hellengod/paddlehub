@@ -6,6 +6,7 @@ use App\Models\River;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreRiverRequest extends FormRequest
 {
@@ -47,6 +48,44 @@ class StoreRiverRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:1200'],
             'start_latitude' => ['required', 'numeric', 'between:-90,90'],
             'start_longitude' => ['required', 'numeric', 'between:-180,180'],
+            'end_latitude' => ['required', 'numeric', 'between:-90,90'],
+            'end_longitude' => ['required', 'numeric', 'between:-180,180'],
+        ];
+    }
+
+    /**
+     * Get the "after" validation callables for the request.
+     *
+     * @return array<int, callable>
+     */
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                $startLatitude = $this->input('start_latitude');
+                $startLongitude = $this->input('start_longitude');
+                $endLatitude = $this->input('end_latitude');
+                $endLongitude = $this->input('end_longitude');
+
+                if (
+                    ! is_numeric($startLatitude)
+                    || ! is_numeric($startLongitude)
+                    || ! is_numeric($endLatitude)
+                    || ! is_numeric($endLongitude)
+                ) {
+                    return;
+                }
+
+                if (
+                    (float) $startLatitude === (float) $endLatitude
+                    && (float) $startLongitude === (float) $endLongitude
+                ) {
+                    $validator->errors()->add(
+                        'end_latitude',
+                        'O ponto de saida precisa ser diferente do ponto de entrada.',
+                    );
+                }
+            },
         ];
     }
 }

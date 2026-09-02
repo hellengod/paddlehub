@@ -2,13 +2,55 @@
   <section class="location-picker">
     <div class="picker-header">
       <div>
-        <h3>Ponto inicial no mapa</h3>
-        <p>Clique no mapa para marcar onde o rio comeca.</p>
+        <h3>Trecho no mapa</h3>
+        <p>Escolha qual ponto esta ativo e clique no mapa para marcar a entrada e a saida do rio.</p>
       </div>
 
-      <button v-if="hasSelection" type="button" class="clear-button" @click="clearSelection">
-        Limpar ponto
-      </button>
+      <BaseButton
+        v-if="hasAnySelection"
+        type="button"
+        class="clear-button"
+        width="auto"
+        min-height="36px"
+        padding="0 12px"
+        font-size="0.82rem"
+        border-width="1px"
+        @click="clearAllSelections"
+      >
+        Limpar pontos
+      </BaseButton>
+    </div>
+
+    <div class="selection-mode">
+      <BaseButton
+        type="button"
+        class="mode-chip"
+        width="auto"
+        min-height="36px"
+        padding="0 12px"
+        font-size="0.82rem"
+        border-width="1px"
+        :class="{ 'mode-chip--active': activePoint === 'start' }"
+        :aria-pressed="activePoint === 'start'"
+        @click="setActivePoint('start')"
+      >
+        Marcando entrada
+      </BaseButton>
+
+      <BaseButton
+        type="button"
+        class="mode-chip mode-chip--end"
+        width="auto"
+        min-height="36px"
+        padding="0 12px"
+        font-size="0.82rem"
+        border-width="1px"
+        :class="{ 'mode-chip--active': activePoint === 'end' }"
+        :aria-pressed="activePoint === 'end'"
+        @click="setActivePoint('end')"
+      >
+        Marcando saida
+      </BaseButton>
     </div>
 
     <div class="map-shell">
@@ -23,27 +65,85 @@
       <div ref="mapContainerRef" class="map-surface" :class="{ 'map-surface--hidden': isLoading || !!loadError }"></div>
     </div>
 
-    <div class="selection-summary">
-      <div class="selection-label">Ponto selecionado</div>
+    <div class="selection-summary-grid">
+      <article class="selection-card" :class="{ 'selection-card--active': activePoint === 'start' }">
+        <div class="selection-card__header">
+          <div>
+            <div class="selection-label">Entrada</div>
+            <p>Onde o trecho comeca.</p>
+          </div>
 
-      <div v-if="hasSelection" class="selection-values">
-        <span>Lat {{ formatCoordinate(props.latitude!) }}</span>
-        <span>Lng {{ formatCoordinate(props.longitude!) }}</span>
-      </div>
+          <BaseButton
+            v-if="hasStartSelection"
+            type="button"
+            class="summary-action"
+            width="auto"
+            min-height="32px"
+            padding="0 10px"
+            font-size="0.82rem"
+            border-width="1px"
+            @click="clearSelection('start')"
+          >
+            Limpar
+          </BaseButton>
+        </div>
 
-      <p v-else class="selection-placeholder">
-        Nenhum ponto marcado ainda.
-      </p>
+        <div v-if="hasStartSelection" class="selection-values">
+          <span>Lat {{ formatCoordinate(props.startLatitude!) }}</span>
+          <span>Lng {{ formatCoordinate(props.startLongitude!) }}</span>
+        </div>
+
+        <p v-else class="selection-placeholder">
+          Nenhum ponto marcado ainda.
+        </p>
+      </article>
+
+      <article class="selection-card" :class="{ 'selection-card--active': activePoint === 'end' }">
+        <div class="selection-card__header">
+          <div>
+            <div class="selection-label">Saida</div>
+            <p>Onde o trecho termina.</p>
+          </div>
+
+          <BaseButton
+            v-if="hasEndSelection"
+            type="button"
+            class="summary-action"
+            width="auto"
+            min-height="32px"
+            padding="0 10px"
+            font-size="0.82rem"
+            border-width="1px"
+            @click="clearSelection('end')"
+          >
+            Limpar
+          </BaseButton>
+        </div>
+
+        <div v-if="hasEndSelection" class="selection-values">
+          <span>Lat {{ formatCoordinate(props.endLatitude!) }}</span>
+          <span>Lng {{ formatCoordinate(props.endLongitude!) }}</span>
+        </div>
+
+        <p v-else class="selection-placeholder">
+          Nenhum ponto marcado ainda.
+        </p>
+      </article>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import BaseButton from '@/components/atoms/BaseButton.vue';
+
+type SelectionPoint = 'start' | 'end';
 
 interface RiverLocationPickerProps {
-  latitude: number | null;
-  longitude: number | null;
+  startLatitude: number | null;
+  startLongitude: number | null;
+  endLatitude: number | null;
+  endLongitude: number | null;
 }
 
 interface MapLibreMarker {
@@ -54,6 +154,10 @@ interface MapLibreMarker {
 
 interface MapLibreMap {
   addControl(control: unknown, position?: string): void;
+  fitBounds(
+    bounds: [[number, number], [number, number]],
+    options?: { padding?: number; maxZoom?: number },
+  ): void;
   flyTo(options: { center: [number, number]; zoom?: number }): void;
   on(event: string, listener: (event: { lngLat: { lat: number; lng: number } }) => void): void;
   remove(): void;
@@ -79,31 +183,42 @@ const MAPLIBRE_CSS_ID = 'maplibre-gl-stylesheet';
 const DEFAULT_CENTER: [number, number] = [-47.2, -22.7];
 const DEFAULT_ZOOM = 5.2;
 const FOCUSED_ZOOM = 9.4;
+const START_MARKER_COLOR = '#36c9c1';
+const END_MARKER_COLOR = '#f0b35f';
 
 let mapLibreLoader: Promise<MapLibreNamespace> | null = null;
 
 const props = defineProps<RiverLocationPickerProps>();
-const emit = defineEmits(['update:latitude', 'update:longitude']);
+const emit = defineEmits<{
+  (event: 'update:startLatitude', value: number | null): void;
+  (event: 'update:startLongitude', value: number | null): void;
+  (event: 'update:endLatitude', value: number | null): void;
+  (event: 'update:endLongitude', value: number | null): void;
+}>();
 
 const mapContainerRef = ref<HTMLElement | null>(null);
 const isLoading = ref(true);
 const loadError = ref('');
+const activePoint = ref<SelectionPoint>('start');
 
 let mapInstance: MapLibreMap | null = null;
-let markerInstance: MapLibreMarker | null = null;
+let startMarkerInstance: MapLibreMarker | null = null;
+let endMarkerInstance: MapLibreMarker | null = null;
 let mapLibreApi: MapLibreNamespace | null = null;
 
-const hasSelection = computed(() => props.latitude !== null && props.longitude !== null);
+const hasStartSelection = computed(() => isCoordinatePair(props.startLatitude, props.startLongitude));
+const hasEndSelection = computed(() => isCoordinatePair(props.endLatitude, props.endLongitude));
+const hasAnySelection = computed(() => hasStartSelection.value || hasEndSelection.value);
 
 watch(
-  () => [props.latitude, props.longitude] as const,
-  ([latitude, longitude]) => {
+  () => [props.startLatitude, props.startLongitude, props.endLatitude, props.endLongitude] as const,
+  ([startLatitude, startLongitude, endLatitude, endLongitude]) => {
     if (!mapInstance || !mapLibreApi) {
       return;
     }
 
-    syncMarker(latitude, longitude);
-  }
+    syncMarkersAndViewport(startLatitude, startLongitude, endLatitude, endLongitude);
+  },
 );
 
 onMounted(() => {
@@ -113,9 +228,11 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleWindowResize);
-  markerInstance?.remove();
+  startMarkerInstance?.remove();
+  endMarkerInstance?.remove();
   mapInstance?.remove();
-  markerInstance = null;
+  startMarkerInstance = null;
+  endMarkerInstance = null;
   mapInstance = null;
 });
 
@@ -195,11 +312,8 @@ async function initializeMap() {
       return;
     }
 
-    const initialCenter: [number, number] = hasSelection.value && props.longitude !== null && props.latitude !== null
-      ? [props.longitude, props.latitude]
-      : DEFAULT_CENTER;
-
-    const initialZoom = hasSelection.value ? FOCUSED_ZOOM : DEFAULT_ZOOM;
+    const initialCenter = getInitialCenter();
+    const initialZoom = hasAnySelection.value ? FOCUSED_ZOOM : DEFAULT_ZOOM;
 
     mapInstance = new mapLibreApi.Map({
       container: mapContainerRef.value,
@@ -211,7 +325,7 @@ async function initializeMap() {
 
     mapInstance.addControl(new mapLibreApi.NavigationControl({ showCompass: false }), 'top-right');
     mapInstance.on('click', handleMapClick);
-    syncMarker(props.latitude, props.longitude);
+    syncMarkersAndViewport(props.startLatitude, props.startLongitude, props.endLatitude, props.endLongitude);
 
     requestAnimationFrame(() => {
       mapInstance?.resize();
@@ -229,47 +343,178 @@ function handleMapClick(event: { lngLat: { lat: number; lng: number } }) {
   const latitude = roundCoordinate(event.lngLat.lat);
   const longitude = roundCoordinate(event.lngLat.lng);
 
-  emit('update:latitude', latitude);
-  emit('update:longitude', longitude);
-  syncMarker(latitude, longitude);
+  if (activePoint.value === 'start') {
+    emit('update:startLatitude', latitude);
+    emit('update:startLongitude', longitude);
+    syncMarkersAndViewport(latitude, longitude, props.endLatitude, props.endLongitude);
+
+    if (!hasEndSelection.value) {
+      activePoint.value = 'end';
+    }
+
+    return;
+  }
+
+  emit('update:endLatitude', latitude);
+  emit('update:endLongitude', longitude);
+  syncMarkersAndViewport(props.startLatitude, props.startLongitude, latitude, longitude);
 }
 
-function syncMarker(latitude: number | null, longitude: number | null) {
+function syncMarkersAndViewport(
+  startLatitude: number | null,
+  startLongitude: number | null,
+  endLatitude: number | null,
+  endLongitude: number | null,
+) {
+  startMarkerInstance = syncMarker(startMarkerInstance, startLatitude, startLongitude, START_MARKER_COLOR);
+  endMarkerInstance = syncMarker(endMarkerInstance, endLatitude, endLongitude, END_MARKER_COLOR);
+  syncViewport(startLatitude, startLongitude, endLatitude, endLongitude);
+}
+
+function syncMarker(
+  markerInstance: MapLibreMarker | null,
+  latitude: number | null,
+  longitude: number | null,
+  color: string,
+) {
   if (!mapInstance || !mapLibreApi) {
-    return;
+    return markerInstance;
   }
 
-  if (latitude === null || longitude === null) {
+  if (!isCoordinatePair(latitude, longitude)) {
     markerInstance?.remove();
-    markerInstance = null;
-    return;
+    return null;
   }
 
-  const lngLat: [number, number] = [longitude, latitude];
+  const safeLatitude = latitude as number;
+  const safeLongitude = longitude as number;
+  const lngLat: [number, number] = [safeLongitude, safeLatitude];
 
   if (!markerInstance) {
-    markerInstance = new mapLibreApi.Marker({
-      color: '#36c9c1',
+    return new mapLibreApi.Marker({
+      color,
       scale: 1.15,
     }).setLngLat(lngLat).addTo(mapInstance);
-  } else {
-    markerInstance.setLngLat(lngLat);
+  }
+
+  markerInstance.setLngLat(lngLat);
+  return markerInstance;
+}
+
+function syncViewport(
+  startLatitude: number | null,
+  startLongitude: number | null,
+  endLatitude: number | null,
+  endLongitude: number | null,
+) {
+  if (!mapInstance) {
+    return;
+  }
+
+  const hasStart = isCoordinatePair(startLatitude, startLongitude);
+  const hasEnd = isCoordinatePair(endLatitude, endLongitude);
+
+  if (hasStart && hasEnd) {
+    const safeStartLatitude = startLatitude as number;
+    const safeStartLongitude = startLongitude as number;
+    const safeEndLatitude = endLatitude as number;
+    const safeEndLongitude = endLongitude as number;
+    const southWest: [number, number] = [
+      Math.min(safeStartLongitude, safeEndLongitude),
+      Math.min(safeStartLatitude, safeEndLatitude),
+    ];
+    const northEast: [number, number] = [
+      Math.max(safeStartLongitude, safeEndLongitude),
+      Math.max(safeStartLatitude, safeEndLatitude),
+    ];
+
+    if (southWest[0] === northEast[0] && southWest[1] === northEast[1]) {
+      mapInstance.flyTo({
+        center: [safeStartLongitude, safeStartLatitude],
+        zoom: FOCUSED_ZOOM,
+      });
+      return;
+    }
+
+    mapInstance.fitBounds([southWest, northEast], {
+      padding: 48,
+      maxZoom: FOCUSED_ZOOM,
+    });
+    return;
+  }
+
+  if (hasStart) {
+    const safeStartLatitude = startLatitude as number;
+    const safeStartLongitude = startLongitude as number;
+    mapInstance.flyTo({
+      center: [safeStartLongitude, safeStartLatitude],
+      zoom: FOCUSED_ZOOM,
+    });
+    return;
+  }
+
+  if (hasEnd) {
+    const safeEndLatitude = endLatitude as number;
+    const safeEndLongitude = endLongitude as number;
+    mapInstance.flyTo({
+      center: [safeEndLongitude, safeEndLatitude],
+      zoom: FOCUSED_ZOOM,
+    });
+    return;
   }
 
   mapInstance.flyTo({
-    center: lngLat,
-    zoom: FOCUSED_ZOOM,
+    center: DEFAULT_CENTER,
+    zoom: DEFAULT_ZOOM,
   });
 }
 
-function clearSelection() {
-  emit('update:latitude', null);
-  emit('update:longitude', null);
-  syncMarker(null, null);
+function clearSelection(point: SelectionPoint) {
+  activePoint.value = point;
+
+  if (point === 'start') {
+    emit('update:startLatitude', null);
+    emit('update:startLongitude', null);
+    syncMarkersAndViewport(null, null, props.endLatitude, props.endLongitude);
+    return;
+  }
+
+  emit('update:endLatitude', null);
+  emit('update:endLongitude', null);
+  syncMarkersAndViewport(props.startLatitude, props.startLongitude, null, null);
+}
+
+function clearAllSelections() {
+  activePoint.value = 'start';
+  emit('update:startLatitude', null);
+  emit('update:startLongitude', null);
+  emit('update:endLatitude', null);
+  emit('update:endLongitude', null);
+  syncMarkersAndViewport(null, null, null, null);
+}
+
+function setActivePoint(point: SelectionPoint) {
+  activePoint.value = point;
+}
+
+function getInitialCenter(): [number, number] {
+  if (isCoordinatePair(props.startLatitude, props.startLongitude)) {
+    return [props.startLongitude as number, props.startLatitude as number];
+  }
+
+  if (isCoordinatePair(props.endLatitude, props.endLongitude)) {
+    return [props.endLongitude as number, props.endLatitude as number];
+  }
+
+  return DEFAULT_CENTER;
 }
 
 function handleWindowResize() {
   mapInstance?.resize();
+}
+
+function isCoordinatePair(latitude: number | null, longitude: number | null) {
+  return latitude !== null && longitude !== null;
 }
 
 function roundCoordinate(value: number) {
@@ -308,7 +553,9 @@ function formatCoordinate(value: number) {
   line-height: 1.45;
 }
 
-.clear-button {
+.clear-button,
+.summary-action,
+.mode-chip {
   min-height: 36px;
   padding: 0 12px;
   border: 1px solid var(--color-border-subtle);
@@ -318,6 +565,27 @@ function formatCoordinate(value: number) {
   font: inherit;
   font-size: 0.85rem;
   cursor: pointer;
+}
+
+.selection-mode {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mode-chip {
+  color: rgba(240, 248, 255, 0.78);
+}
+
+.mode-chip--active {
+  border-color: rgba(54, 201, 193, 0.35);
+  background: rgba(22, 87, 89, 0.35);
+  color: var(--color-text-primary);
+}
+
+.mode-chip--end.mode-chip--active {
+  border-color: rgba(240, 179, 95, 0.34);
+  background: rgba(117, 76, 24, 0.26);
 }
 
 .map-shell {
@@ -356,14 +624,44 @@ function formatCoordinate(value: number) {
   color: #ffd4d4;
 }
 
-.selection-summary {
+.selection-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.selection-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   padding: 14px 16px;
   border: 1px solid rgba(58, 212, 203, 0.14);
   border-radius: 14px;
   background: rgba(8, 21, 31, 0.74);
+}
+
+.selection-card--active {
+  border-color: rgba(58, 212, 203, 0.28);
+  box-shadow: 0 0 0 1px rgba(58, 212, 203, 0.08) inset;
+}
+
+.selection-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.selection-card__header p {
+  margin-top: 4px;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.summary-action {
+  min-height: 32px;
+  padding: 0 10px;
 }
 
 .selection-label {
@@ -390,6 +688,10 @@ function formatCoordinate(value: number) {
 @media (max-width: 720px) {
   .picker-header {
     flex-direction: column;
+  }
+
+  .selection-summary-grid {
+    grid-template-columns: 1fr;
   }
 
   .map-shell,

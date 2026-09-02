@@ -21,8 +21,7 @@
 
             <div class="river-card-badges">
                 <span class="card-pill">{{ props.river.displayDifficultyClass }}</span>
-                <span class="card-pill">{{ props.river.extensionKm }} km</span>
-                <span class="card-pill">{{ props.river.trailLabel }}</span>
+                <span class="card-pill">{{ formatExtensionKm(props.river.extensionKm) }} km</span>
             </div>
 
             <div class="river-card-meta">
@@ -54,6 +53,10 @@ const emit = defineEmits<{
 const favoriteButtonLabel = computed(() =>
     props.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'
 );
+
+function formatExtensionKm(distance: number) {
+    return distance.toFixed(1);
+}
 </script>
 
 <style scoped>
