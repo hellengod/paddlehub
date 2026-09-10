@@ -26,10 +26,20 @@ class RiverFactory extends Factory
             'state' => $this->faker->randomElement(['SP', 'RJ', 'MG', 'PR', 'SC', 'RS']),
             'difficulty_class' => $this->faker->randomElement(River::DIFFICULTY_CLASSES),
             'description' => $this->faker->sentence(12),
+            'extension_km' => River::calculateDistanceKm(
+                $startLatitude,
+                $startLongitude,
+                $endLatitude,
+                $endLongitude,
+            ),
             'start_latitude' => $startLatitude,
             'start_longitude' => $startLongitude,
             'end_latitude' => $endLatitude,
             'end_longitude' => $endLongitude,
+            'route_coordinates' => [
+                [$startLongitude, $startLatitude],
+                [$endLongitude, $endLatitude],
+            ],
             'created_by' => User::factory(),
         ];
     }

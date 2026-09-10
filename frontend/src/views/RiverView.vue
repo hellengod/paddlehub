@@ -28,32 +28,58 @@
 
                     <div v-else class="river-list">
                         <RiverCard v-for="river in filteredRivers" :key="river.id" :river="river"
-                            :is-favorite="favoriteIds.has(river.id)" @toggle-favorite="toggleFavorite" />
+                            :is-favorite="favoriteIds.has(river.id)" :cover-src="getRiverCoverSrc(river.id)"
+                            @toggle-favorite="toggleFavorite" @edit="openEditModal" @delete="openDeleteModal" />
                     </div>
                 </section>
             </div>
         </div>
 
         <RiverCreateModal :model-value="isCreateModalOpen" :creating="creating" :error-message="errorMessage"
-            :difficulty-options="difficultyOptions" @update:modelValue="handleCreateModalVisibilityChange"
-            @submit="handleCreateRiver" />
+            :difficulty-options="difficultyOptions" :river="editingRiver"
+            @update:modelValue="handleCreateModalVisibilityChange" @submit="handleSaveRiver" />
+
+        <BaseModal :model-value="riverPendingDelete !== null" title="Excluir rio"
+            :description="riverPendingDelete ? `Voce esta excluindo ${riverPendingDelete.name}.` : ''" max-width="460px"
+            :close-on-backdrop="false" @update:modelValue="closeDeleteModal">
+            <p class="delete-confirmation-text">
+                Esta acao remove definitivamente o trecho cadastrado.
+            </p>
+            <p v-if="errorMessage" class="delete-confirmation-error" role="alert">{{ errorMessage }}</p>
+
+            <template #footer>
+                <BaseButton type="button" width="auto" min-height="40px" padding="0 16px" font-size="13px"
+                    border-width="1px" background-color="transparent" text-color="var(--color-text-primary)"
+                    border-color="var(--color-border-subtle)" label="Cancelar" @click="closeDeleteModal(false)" />
+                <BaseButton type="button" width="auto" min-height="40px" padding="0 16px" font-size="13px"
+                    border-width="1px" background-color="rgba(150, 35, 35, 0.72)" text-color="#fff"
+                    border-color="rgba(255, 115, 115, 0.42)" :disabled="creating"
+                    :label="creating ? 'Excluindo...' : 'Excluir rio'" @click="confirmDeleteRiver" />
+            </template>
+        </BaseModal>
     </section>
 </template>
 
 <script setup lang="ts">
+import BaseButton from '@/components/atoms/BaseButton.vue';
+import BaseModal from '@/components/atoms/BaseModal.vue';
 import RiverCard from '@/components/molecules/RiverCard.vue';
 import RiverCreateModal from '@/components/organisms/RiverCreateModal.vue';
 import RiverFiltersPanel from '@/components/organisms/RiverFiltersPanel.vue';
 import { useRivers } from '@/composables/useRivers';
-import type { RiverCatalogCard, RiverCatalogFilters, RiverCreateFormValues } from '@/types/rivers';
-import { computed, onMounted, reactive, ref } from 'vue';
+import type { River, RiverCatalogCard, RiverCatalogFilters, RiverCreateFormValues, RiverPayload } from '@/types/rivers';
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 
-const difficultyOptions = ['Classe I', 'Classe II', 'Classe III', 'Classe IV', 'Classe V+'];
+const difficultyOptions = ['Classe I', 'Classe II', 'Classe III', 'Classe IV', 'Classe V', 'Classe V+'];
 const ratingOptions = [1, 2, 3, 4, 5];
 
-const { rivers, loading, creating, errorMessage, fetchRivers, createRiver, clearFeedback } = useRivers();
+const { rivers, loading, creating, errorMessage, fetchRivers, createRiver, updateRiver, deleteRiver, clearFeedback } = useRivers();
 const favoriteIds = ref<Set<number>>(new Set());
 const isCreateModalOpen = ref(false);
+const editingRiver = ref<River | null>(null);
+const riverPendingDelete = ref<River | null>(null);
+const localRiverCoverUrls = ref<Map<number, string>>(new Map());
+let createModalSession = 0;
 
 const activeFilters = reactive<RiverCatalogFilters>({
     search: '',
@@ -123,6 +149,15 @@ function handleApplyFilters(filters: RiverCatalogFilters) {
 
 function openCreateModal() {
     clearFeedback();
+    editingRiver.value = null;
+    createModalSession += 1;
+    isCreateModalOpen.value = true;
+}
+
+function openEditModal(river: River) {
+    clearFeedback();
+    editingRiver.value = river;
+    createModalSession += 1;
     isCreateModalOpen.value = true;
 }
 
@@ -130,6 +165,19 @@ function handleCreateModalVisibilityChange(isOpen: boolean) {
     isCreateModalOpen.value = isOpen;
 
     if (!isOpen) {
+        clearFeedback();
+        editingRiver.value = null;
+    }
+}
+
+function openDeleteModal(river: River) {
+    clearFeedback();
+    riverPendingDelete.value = river;
+}
+
+function closeDeleteModal(isOpen = false) {
+    if (!isOpen && !creating.value) {
+        riverPendingDelete.value = null;
         clearFeedback();
     }
 }
@@ -146,26 +194,92 @@ function toggleFavorite(riverId: number) {
     favoriteIds.value = nextFavorites;
 }
 
-async function handleCreateRiver(formValues: RiverCreateFormValues) {
+function getRiverCoverSrc(riverId: number) {
+    return localRiverCoverUrls.value.get(riverId);
+}
+
+function setLocalRiverCover(riverId: number, coverImage: File | null) {
+    if (!coverImage) {
+        return;
+    }
+
+    const previousUrl = localRiverCoverUrls.value.get(riverId);
+    if (previousUrl) {
+        URL.revokeObjectURL(previousUrl);
+    }
+
+    const nextCoverUrls = new Map(localRiverCoverUrls.value);
+    nextCoverUrls.set(riverId, URL.createObjectURL(coverImage));
+    localRiverCoverUrls.value = nextCoverUrls;
+}
+
+function removeLocalRiverCover(riverId: number) {
+    const coverUrl = localRiverCoverUrls.value.get(riverId);
+    if (coverUrl) {
+        URL.revokeObjectURL(coverUrl);
+    }
+
+    const nextCoverUrls = new Map(localRiverCoverUrls.value);
+    nextCoverUrls.delete(riverId);
+    localRiverCoverUrls.value = nextCoverUrls;
+}
+
+function riverPayloadFromForm(formValues: RiverCreateFormValues): RiverPayload {
+    return {
+        name: formValues.name.trim(),
+        city: formValues.city.trim(),
+        state: formValues.state.trim(),
+        difficulty_class: formValues.difficultyClass.trim() || null,
+        description: formValues.description.trim() || null,
+        extension_km: Number(formValues.extensionKm),
+        start_latitude: formValues.startLatitude as number,
+        start_longitude: formValues.startLongitude as number,
+        end_latitude: formValues.endLatitude as number,
+        end_longitude: formValues.endLongitude as number,
+        route_coordinates: formValues.routeCoordinates,
+    };
+}
+
+async function handleSaveRiver(formValues: RiverCreateFormValues) {
+    if (creating.value) {
+        return;
+    }
+
+    const submissionSession = createModalSession;
+    const riverBeingEdited = editingRiver.value;
     clearFeedback();
 
     try {
-        await createRiver({
-            name: formValues.name.trim(),
-            city: formValues.city.trim(),
-            state: formValues.state.trim(),
-            difficulty_class: formValues.difficultyClass.trim() || null,
-            description: formValues.description.trim() || null,
-            start_latitude: formValues.startLatitude as number,
-            start_longitude: formValues.startLongitude as number,
-            end_latitude: formValues.endLatitude as number,
-            end_longitude: formValues.endLongitude as number,
-        });
+        const savedRiver = riverBeingEdited
+            ? await updateRiver(riverBeingEdited.id, riverPayloadFromForm(formValues))
+            : await createRiver(riverPayloadFromForm(formValues));
 
+        setLocalRiverCover(savedRiver.id, formValues.coverImage);
         initializeFavorites(riverCards.value);
-        handleCreateModalVisibilityChange(false);
+        if (isCreateModalOpen.value && submissionSession === createModalSession) {
+            handleCreateModalVisibilityChange(false);
+        }
     } catch {
         // O composable ja define a mensagem de erro.
+    }
+}
+
+async function confirmDeleteRiver() {
+    const river = riverPendingDelete.value;
+
+    if (!river || creating.value) {
+        return;
+    }
+
+    clearFeedback();
+
+    try {
+        await deleteRiver(river.id);
+        removeLocalRiverCover(river.id);
+        favoriteIds.value = new Set([...favoriteIds.value].filter((riverId) => riverId !== river.id));
+        riverPendingDelete.value = null;
+    } catch {
+        // O composable mantem a mensagem de erro para o modal.
     }
 }
 
@@ -173,6 +287,10 @@ onMounted(() => {
     void fetchRivers().then(() => {
         initializeFavorites(riverCards.value);
     });
+});
+
+onBeforeUnmount(() => {
+    localRiverCoverUrls.value.forEach((coverUrl) => URL.revokeObjectURL(coverUrl));
 });
 </script>
 
@@ -185,28 +303,38 @@ onMounted(() => {
 
 .river-shell {
     min-height: calc(100vh - 20px);
+    padding: 74px 12px 12px;
     border: 1px solid var(--color-border-panel);
     border-radius: var(--radius-sm);
     background: linear-gradient(180deg, rgba(4, 16, 25, 0.98) 0%, rgba(3, 13, 21, 1) 100%);
-    padding: 12px;
+    container-type: inline-size;
 }
 
 .river-layout {
-    display: grid;
-    grid-template-columns: 268px minmax(0, 1fr);
-    gap: 12px;
-    min-height: calc(100vh - 46px);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: calc(100vh - 108px);
 }
 
 .results-panel {
-    background: linear-gradient(180deg, rgba(6, 21, 31, 0.98) 0%, rgba(4, 18, 28, 0.98) 100%);
-    padding: 12px 14px 14px;
+    min-width: 0;
+}
+
+.delete-confirmation-text {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.delete-confirmation-error {
+    margin-top: 12px;
+    color: #ffd4d4;
+    font-size: 13px;
 }
 
 .results-header {
-    padding-top: 2px;
-    padding-right: 88px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .results-header h1 {
@@ -239,19 +367,13 @@ onMounted(() => {
     gap: 8px;
 }
 
-@media (max-width: 980px) {
-    .river-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .results-header {
-        padding-right: 14px;
-    }
-}
-
 @media (max-width: 720px) {
+    .river-shell {
+        padding-top: 80px;
+    }
+
     .results-panel {
-        padding-top: 16px;
+        padding: 0;
     }
 }
 </style>

@@ -31,10 +31,12 @@ class River extends Model
         'state',
         'difficulty_class',
         'description',
+        'extension_km',
         'start_latitude',
         'start_longitude',
         'end_latitude',
         'end_longitude',
+        'route_coordinates',
         'created_by',
     ];
 
@@ -46,15 +48,25 @@ class River extends Model
     protected function casts(): array
     {
         return [
+            'extension_km' => 'float',
             'start_latitude' => 'float',
             'start_longitude' => 'float',
             'end_latitude' => 'float',
             'end_longitude' => 'float',
+            'route_coordinates' => 'array',
         ];
     }
 
     public function extensionKm(): float
     {
+        if ($this->extension_km !== null) {
+            return (float) $this->extension_km;
+        }
+
+        if (is_array($this->route_coordinates) && count($this->route_coordinates) >= 2) {
+            return self::calculatePolylineDistanceKm($this->route_coordinates);
+        }
+
         if (
             $this->start_latitude === null
             || $this->start_longitude === null
@@ -78,6 +90,41 @@ class River extends Model
         float $endLatitude,
         float $endLongitude,
     ): float {
+        return round(self::distanceBetweenCoordinates(
+            $startLatitude,
+            $startLongitude,
+            $endLatitude,
+            $endLongitude,
+        ), 1);
+    }
+
+    /**
+     * @param  array<int, array{0: float|int, 1: float|int}>  $coordinates
+     */
+    public static function calculatePolylineDistanceKm(array $coordinates): float
+    {
+        $distance = 0.0;
+
+        for ($index = 1; $index < count($coordinates); $index++) {
+            [$startLongitude, $startLatitude] = $coordinates[$index - 1];
+            [$endLongitude, $endLatitude] = $coordinates[$index];
+            $distance += self::distanceBetweenCoordinates(
+                (float) $startLatitude,
+                (float) $startLongitude,
+                (float) $endLatitude,
+                (float) $endLongitude,
+            );
+        }
+
+        return round($distance, 1);
+    }
+
+    private static function distanceBetweenCoordinates(
+        float $startLatitude,
+        float $startLongitude,
+        float $endLatitude,
+        float $endLongitude,
+    ): float {
         $earthRadiusKm = 6371;
         $latitudeDelta = deg2rad($endLatitude - $startLatitude);
         $longitudeDelta = deg2rad($endLongitude - $startLongitude);
@@ -88,9 +135,8 @@ class River extends Model
             + cos($startLatitudeRadians) * cos($endLatitudeRadians) * sin($longitudeDelta / 2) ** 2;
 
         $normalizedA = min(1.0, max(0.0, $a));
-        $distance = 2 * $earthRadiusKm * asin(sqrt($normalizedA));
 
-        return round($distance, 1);
+        return 2 * $earthRadiusKm * asin(sqrt($normalizedA));
     }
 
     public function creator(): BelongsTo

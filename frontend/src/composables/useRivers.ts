@@ -90,6 +90,43 @@ export function useRivers() {
         }
     }
 
+    async function updateRiver(riverId: number, payload: RiverPayload) {
+        riversState.creating = true;
+        riversState.errorMessage = '';
+
+        try {
+            await initializeCsrf();
+
+            const response = await apiClient.put<RiverCreateResponse>(`api/rivers/${riverId}`, payload);
+            riversState.items = riversState.items.map((river) =>
+                river.id === riverId ? response.data.data.river : river
+            );
+
+            return response.data.data.river;
+        } catch (error) {
+            riversState.errorMessage = getErrorMessage(error, 'Nao foi possivel atualizar o rio.');
+            throw error;
+        } finally {
+            riversState.creating = false;
+        }
+    }
+
+    async function deleteRiver(riverId: number) {
+        riversState.creating = true;
+        riversState.errorMessage = '';
+
+        try {
+            await initializeCsrf();
+            await apiClient.delete(`api/rivers/${riverId}`);
+            riversState.items = riversState.items.filter((river) => river.id !== riverId);
+        } catch (error) {
+            riversState.errorMessage = getErrorMessage(error, 'Nao foi possivel excluir o rio.');
+            throw error;
+        } finally {
+            riversState.creating = false;
+        }
+    }
+
     return {
         rivers,
         loading,
@@ -97,6 +134,8 @@ export function useRivers() {
         errorMessage,
         fetchRivers,
         createRiver,
+        updateRiver,
+        deleteRiver,
         clearFeedback,
     };
 }

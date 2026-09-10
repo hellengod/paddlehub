@@ -1,6 +1,6 @@
 <template>
     <article class="river-card">
-        <img src="/imagem-fundo5.png" alt="" class="river-card-image" aria-hidden="true">
+        <img :src="coverSrc" :alt="coverAlt" class="river-card-image" :aria-hidden="!props.coverSrc">
 
         <div class="river-card-content">
             <div class="river-card-header">
@@ -9,14 +9,26 @@
                     <p>{{ props.river.city }}, {{ props.river.state }}</p>
                 </div>
 
-                <button type="button" class="favorite-button" :class="{ 'favorite-button--active': props.isFavorite }"
-                    :aria-label="favoriteButtonLabel" @click="emit('toggle-favorite', props.river.id)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="m12 21-1.45-1.32C5.4 15.03 2 11.94 2 8.15 2 5.06 4.42 3 7.3 3c1.74 0 3.41.81 4.7 2.09C13.29 3.81 14.96 3 16.7 3 19.58 3 22 5.06 22 8.15c0 3.79-3.4 6.88-8.55 11.54z">
-                        </path>
-                    </svg>
-                </button>
+                <div class="river-card-actions">
+                    <BaseButton v-if="props.river.canManage" type="button" class="manage-button" width="auto"
+                        min-height="28px" padding="0 9px" font-size="11px" font-weight="500" border-width="1px"
+                        border-radius="7px" background-color="transparent" text-color="var(--color-accent-strong)"
+                        border-color="var(--color-border-subtle)" label="Editar"
+                        @click="emit('edit', props.river)" />
+                    <BaseButton v-if="props.river.canManage" type="button" class="manage-button manage-button--danger"
+                        width="auto" min-height="28px" padding="0 9px" font-size="11px" font-weight="500"
+                        border-width="1px" border-radius="7px" background-color="transparent" text-color="#ffb5b5"
+                        border-color="rgba(255, 115, 115, 0.24)" label="Excluir"
+                        @click="emit('delete', props.river)" />
+                    <button type="button" class="favorite-button" :class="{ 'favorite-button--active': props.isFavorite }"
+                        :aria-label="favoriteButtonLabel" @click="emit('toggle-favorite', props.river.id)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="m12 21-1.45-1.32C5.4 15.03 2 11.94 2 8.15 2 5.06 4.42 3 7.3 3c1.74 0 3.41.81 4.7 2.09C13.29 3.81 14.96 3 16.7 3 19.58 3 22 5.06 22 8.15c0 3.79-3.4 6.88-8.55 11.54z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="river-card-badges">
@@ -37,22 +49,28 @@
 </template>
 
 <script setup lang="ts">
+import BaseButton from '@/components/atoms/BaseButton.vue';
 import type { RiverCatalogCard } from '@/types/rivers';
 import { computed } from 'vue';
 
 interface RiverCardProps {
     river: RiverCatalogCard;
     isFavorite: boolean;
+    coverSrc?: string;
 }
 
 const props = defineProps<RiverCardProps>();
 const emit = defineEmits<{
     (event: 'toggle-favorite', riverId: number): void;
+    (event: 'edit', river: RiverCatalogCard): void;
+    (event: 'delete', river: RiverCatalogCard): void;
 }>();
 
 const favoriteButtonLabel = computed(() =>
     props.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'
 );
+const coverSrc = computed(() => props.coverSrc || '/imagem-fundo5.png');
+const coverAlt = computed(() => props.coverSrc ? `Mapa do trecho ${props.river.name}` : '');
 
 function formatExtensionKm(distance: number) {
     return distance.toFixed(1);
@@ -104,6 +122,22 @@ function formatExtensionKm(distance: number) {
     margin-top: 4px;
     color: rgba(230, 244, 255, 0.68);
     font-size: 12px;
+}
+
+.river-card-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 6px;
+}
+
+.manage-button:hover {
+    border-color: var(--color-accent-primary);
+}
+
+.manage-button--danger:hover {
+    border-color: rgba(255, 115, 115, 0.52);
+    background: rgba(113, 24, 24, 0.22);
 }
 
 .favorite-button {

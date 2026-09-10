@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'nominatim' => [
+        'url' => env('NOMINATIM_URL', 'https://nominatim.openstreetmap.org/search'),
+        'user_agent' => env('NOMINATIM_USER_AGENT', 'PaddleHub/1.0 ('.env('APP_URL', 'http://localhost').')'),
+    ],
+
 ];

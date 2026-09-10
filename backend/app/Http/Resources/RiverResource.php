@@ -26,11 +26,13 @@ class RiverResource extends JsonResource
             'startLongitude' => (float) $this->start_longitude,
             'endLatitude' => $this->end_latitude !== null ? (float) $this->end_latitude : null,
             'endLongitude' => $this->end_longitude !== null ? (float) $this->end_longitude : null,
+            'routeCoordinates' => $this->route_coordinates ?? [],
             'extensionKm' => $this->resource->extensionKm(),
             'createdBy' => [
                 'id' => $this->creator?->id,
                 'name' => $this->creator?->name,
             ],
+            'canManage' => $request->user()?->id === $this->created_by,
             'createdAt' => $this->created_at?->toISOString(),
         ];
     }

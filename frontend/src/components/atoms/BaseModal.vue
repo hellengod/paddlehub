@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div v-if="props.modelValue" class="modal-overlay" @click="closeModal">
+    <div v-if="props.modelValue" class="modal-overlay" @click.self="props.closeOnBackdrop && closeModal()">
       <div class="modal-panel" :style="{ maxWidth: props.maxWidth }" role="dialog" aria-modal="true"
         :aria-labelledby="titleId" @click.stop>
         <header class="modal-header">
@@ -34,11 +34,13 @@ interface BaseModalProps {
   title: string;
   description?: string;
   maxWidth?: string;
+  closeOnBackdrop?: boolean;
 }
 
 const props = withDefaults(defineProps<BaseModalProps>(), {
   description: '',
-  maxWidth: '840px'
+  maxWidth: '840px',
+  closeOnBackdrop: true
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -75,9 +77,12 @@ function closeModal() {
 }
 
 .modal-panel {
+  display: flex;
+  flex-direction: column;
   width: min(100%, 840px);
   max-height: calc(100vh - 48px);
-  overflow: auto;
+  max-height: calc(100dvh - 48px);
+  overflow: hidden;
   border: 1px solid var(--color-border-panel);
   border-radius: var(--radius-lg);
   background: var(--color-bg-panel);
@@ -86,10 +91,11 @@ function closeModal() {
 
 .modal-header {
   display: flex;
+  flex-shrink: 0;
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  padding: 24px 24px 0;
+  padding: 24px 24px 24px;
 }
 
 .modal-heading h2 {
@@ -132,19 +138,29 @@ function closeModal() {
 }
 
 .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
   padding: 24px;
 }
 
 .modal-footer {
   display: flex;
+  flex-shrink: 0;
   justify-content: flex-end;
   gap: 12px;
-  padding: 0 24px 24px;
+  padding: 24px 24px 24px;
 }
 
 @media (max-width: 768px) {
   .modal-overlay {
     padding: 16px;
+  }
+
+  .modal-panel {
+    max-height: calc(100vh - 32px);
+    max-height: calc(100dvh - 32px);
   }
 
   .modal-header,

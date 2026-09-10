@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\River\StoreRiverRequest;
+use App\Http\Requests\River\UpdateRiverRequest;
 use App\Http\Resources\RiverResource;
 use App\Models\River;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class RiverController extends Controller
 {
@@ -39,5 +41,26 @@ class RiverController extends Controller
                 'river' => new RiverResource($river),
             ],
         ], 201);
+    }
+
+    public function update(UpdateRiverRequest $request, River $river): JsonResponse
+    {
+        $river->update($request->validated());
+        $river->load('creator:id,name');
+
+        return response()->json([
+            'message' => 'Rio atualizado com sucesso',
+            'data' => [
+                'river' => new RiverResource($river),
+            ],
+        ]);
+    }
+
+    public function destroy(River $river): Response
+    {
+        $this->authorize('delete', $river);
+        $river->delete();
+
+        return response()->noContent();
     }
 }

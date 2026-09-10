@@ -1,39 +1,38 @@
 <template>
     <aside class="filters-panel">
-        <label class="search-field" for="river-search">
-            <span class="search-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="7"></circle>
-                    <path d="m20 20-3.5-3.5"></path>
-                </svg>
-            </span>
-            <input id="river-search" v-model.trim="draftFilters.search" type="search" placeholder="Buscar rio"
-                @keyup.enter="applyFilters">
-        </label>
+        <h2 class="visually-hidden">Busca e filtros de rios</h2>
 
-        <BaseButton
-            class="create-button"
-            min-height="42px"
-            padding="0 14px"
-            font-size="13px"
-            font-weight="700"
-            border-width="1px"
-            gap="12px"
-            background="linear-gradient(180deg, rgba(19, 129, 121, 0.98) 0%, rgba(15, 105, 100, 0.98) 100%)"
-            text-color="var(--color-text-primary)"
-            border-color="rgba(40, 167, 160, 0.42)"
-            @click="emit('open-create')"
-        >
-            <span class="create-button-icon" aria-hidden="true">+</span>
-            <span>Cadastrar rio</span>
-        </BaseButton>
+        <div class="primary-actions">
+            <label class="search-field" for="river-search">
+                <span class="search-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-3.5-3.5"></path>
+                    </svg>
+                </span>
+                <input id="river-search" v-model.trim="draftFilters.search" type="search" placeholder="Buscar rio"
+                    @keyup.enter="applyFilters">
+            </label>
 
-        <div class="filters-header">
-            <h2>Filtros</h2>
-            <button type="button" class="clear-button" @click="clearFilters">Limpar filtros</button>
+            <BaseButton
+                class="create-button"
+                min-height="38px"
+                padding="0 14px"
+                font-size="12px"
+                font-weight="700"
+                border-width="1px"
+                gap="10px"
+                background="linear-gradient(180deg, rgba(19, 129, 121, 0.98) 0%, rgba(15, 105, 100, 0.98) 100%)"
+                text-color="var(--color-text-primary)"
+                border-color="rgba(40, 167, 160, 0.42)"
+                @click="emit('open-create')"
+            >
+                <span class="create-button-icon" aria-hidden="true">+</span>
+                <span>Cadastrar rio</span>
+            </BaseButton>
         </div>
 
-        <div class="filter-group">
+        <div class="filter-group filter-group--region">
             <label for="region-filter">Regiao</label>
             <div class="select-shell">
                 <select id="region-filter" v-model="draftFilters.region">
@@ -45,7 +44,7 @@
             </div>
         </div>
 
-        <div class="filter-group">
+        <div class="filter-group filter-group--difficulty">
             <label for="difficulty-filter">Dificuldade</label>
             <div class="select-shell">
                 <select id="difficulty-filter" v-model="draftFilters.difficulty">
@@ -57,7 +56,7 @@
             </div>
         </div>
 
-        <div class="filter-group">
+        <div class="filter-group filter-group--distance">
             <div class="filter-label">Extensao (km)</div>
             <input v-model="draftFilters.maxDistance" class="range-input" type="range" min="0" max="100" step="1">
             <div class="range-labels">
@@ -66,7 +65,7 @@
             </div>
         </div>
 
-        <div class="filter-group">
+        <div class="filter-group filter-group--rating">
             <div class="filter-label">Avaliacao minima</div>
             <div class="rating-selector">
                 <button v-for="star in props.ratingOptions" :key="star" type="button" class="star-button"
@@ -77,19 +76,22 @@
             </div>
         </div>
 
-        <BaseButton
-            class="apply-button"
-            min-height="42px"
-            padding="0 14px"
-            font-size="13px"
-            font-weight="600"
-            border-width="1px"
-            background="linear-gradient(180deg, #138179 0%, #0f6964 100%)"
-            text-color="var(--color-text-primary)"
-            border-color="rgba(40, 167, 160, 0.42)"
-            label="Aplicar filtros"
-            @click="applyFilters"
-        />
+        <div class="filter-actions">
+            <BaseButton
+                class="apply-button"
+                min-height="38px"
+                padding="0 14px"
+                font-size="12px"
+                font-weight="600"
+                border-width="1px"
+                background="linear-gradient(180deg, #138179 0%, #0f6964 100%)"
+                text-color="var(--color-text-primary)"
+                border-color="rgba(40, 167, 160, 0.42)"
+                label="Aplicar filtros"
+                @click="applyFilters"
+            />
+            <button type="button" class="clear-button" @click="clearFilters">Limpar filtros</button>
+        </div>
     </aside>
 </template>
 
@@ -153,16 +155,42 @@ function clearFilters() {
 
 <style scoped>
 .filters-panel {
-    display: flex;
-    flex-direction: column;
-    padding: 16px;
+    display: grid;
+    grid-template-columns:
+        minmax(250px, 1.45fr)
+        minmax(100px, 0.62fr)
+        minmax(110px, 0.7fr)
+        minmax(150px, 0.9fr)
+        minmax(110px, 0.65fr)
+        minmax(190px, 1fr);
+    align-items: stretch;
+    min-width: 0;
+    padding: 8px;
     border: 1px solid rgba(127, 185, 215, 0.12);
-    border-radius: 14px;
+    border-radius: 10px;
     background: linear-gradient(180deg, rgba(6, 21, 31, 0.98) 0%, rgba(4, 18, 28, 0.98) 100%);
 }
 
-.create-button {
-    margin-top: 16px;
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.primary-actions {
+    display: grid;
+    grid-template-columns: minmax(120px, 1fr) minmax(126px, 0.78fr);
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding-right: 12px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .create-button-icon {
@@ -173,6 +201,7 @@ function clearFilters() {
 .search-field {
     position: relative;
     display: block;
+    min-width: 0;
 }
 
 .search-icon {
@@ -194,7 +223,7 @@ function clearFilters() {
 .search-field input,
 .select-shell select {
     width: 100%;
-    min-height: 40px;
+    min-height: 38px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 10px;
     background: rgba(8, 21, 31, 0.88);
@@ -210,40 +239,33 @@ function clearFilters() {
     color: rgba(230, 244, 255, 0.42);
 }
 
-.filters-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-top: 24px;
-    margin-bottom: 18px;
-}
-
-.filters-header h2 {
-    color: var(--color-text-primary);
-    font-size: 15px;
-    font-weight: 600;
-}
-
 .clear-button {
     border: none;
     background: transparent;
     color: var(--color-accent-primary);
     font-size: 11px;
+    white-space: nowrap;
     cursor: pointer;
 }
 
 .filter-group {
-    margin-bottom: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    margin: 0;
+    padding: 0 12px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .filter-group label,
 .filter-label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     color: rgba(240, 248, 255, 0.8);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
+    line-height: 1.2;
 }
 
 .select-shell {
@@ -277,15 +299,14 @@ function clearFilters() {
 .range-labels {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
+    margin-top: 4px;
     color: rgba(230, 244, 255, 0.54);
     font-size: 11px;
 }
 
 .rating-selector {
     display: flex;
-    gap: 5px;
-    margin-top: 2px;
+    gap: 4px;
 }
 
 .star-button {
@@ -293,7 +314,7 @@ function clearFilters() {
     border: none;
     background: transparent;
     color: rgba(71, 121, 135, 0.75);
-    font-size: 22px;
+    font-size: 19px;
     line-height: 1;
     cursor: pointer;
 }
@@ -302,12 +323,69 @@ function clearFilters() {
     color: var(--color-accent-primary);
 }
 
-.apply-button {
-    margin-top: 10px;
+.filter-actions {
+    display: grid;
+    grid-template-columns: minmax(112px, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding-left: 12px;
 }
 
 .create-button:hover,
 .apply-button:hover {
     filter: brightness(1.04);
+}
+
+@container (max-width: 980px) {
+    .filters-panel {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px 0;
+        padding: 12px;
+    }
+
+    .primary-actions {
+        grid-column: span 2;
+    }
+
+    .filter-group--region,
+    .filter-group--rating {
+        border-right: none;
+    }
+
+    .filter-actions {
+        grid-column: 1 / -1;
+        grid-template-columns: minmax(112px, 220px) auto;
+        justify-content: end;
+        padding-right: 8px;
+    }
+}
+
+@container (max-width: 680px) {
+    .filters-panel {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .primary-actions {
+        grid-column: auto;
+        grid-template-columns: 1fr;
+        padding: 0 0 12px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .filter-group {
+        padding: 0 0 12px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .filter-actions {
+        grid-column: auto;
+        grid-template-columns: 1fr;
+        justify-content: stretch;
+        padding: 0;
+    }
 }
 </style>

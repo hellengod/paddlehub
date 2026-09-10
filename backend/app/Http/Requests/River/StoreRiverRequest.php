@@ -46,10 +46,15 @@ class StoreRiverRequest extends FormRequest
             'state' => ['required', 'string', 'size:2'],
             'difficulty_class' => ['nullable', 'string', Rule::in(River::DIFFICULTY_CLASSES)],
             'description' => ['nullable', 'string', 'max:1200'],
+            'extension_km' => ['required', 'numeric', 'gt:0', 'max:10000'],
             'start_latitude' => ['required', 'numeric', 'between:-90,90'],
             'start_longitude' => ['required', 'numeric', 'between:-180,180'],
             'end_latitude' => ['required', 'numeric', 'between:-90,90'],
             'end_longitude' => ['required', 'numeric', 'between:-180,180'],
+            'route_coordinates' => ['required', 'array', 'min:2', 'max:10000'],
+            'route_coordinates.*' => ['required', 'array', 'size:2'],
+            'route_coordinates.*.0' => ['required', 'numeric', 'between:-180,180'],
+            'route_coordinates.*.1' => ['required', 'numeric', 'between:-90,90'],
         ];
     }
 
@@ -85,7 +90,36 @@ class StoreRiverRequest extends FormRequest
                         'O ponto de saida precisa ser diferente do ponto de entrada.',
                     );
                 }
+
+                $routeCoordinates = $this->input('route_coordinates');
+
+                if (! is_array($routeCoordinates) || count($routeCoordinates) < 2) {
+                    return;
+                }
+
+                $firstCoordinate = $routeCoordinates[0] ?? null;
+                $lastCoordinate = $routeCoordinates[array_key_last($routeCoordinates)] ?? null;
+
+                if (
+                    ! $this->matchesCoordinate($firstCoordinate, (float) $startLongitude, (float) $startLatitude)
+                    || ! $this->matchesCoordinate($lastCoordinate, (float) $endLongitude, (float) $endLatitude)
+                ) {
+                    $validator->errors()->add(
+                        'route_coordinates',
+                        'O percurso precisa comecar na entrada e terminar na saida selecionadas.',
+                    );
+                }
             },
         ];
+    }
+
+    private function matchesCoordinate(mixed $coordinate, float $longitude, float $latitude): bool
+    {
+        return is_array($coordinate)
+            && isset($coordinate[0], $coordinate[1])
+            && is_numeric($coordinate[0])
+            && is_numeric($coordinate[1])
+            && abs((float) $coordinate[0] - $longitude) < 0.000001
+            && abs((float) $coordinate[1] - $latitude) < 0.000001;
     }
 }
