@@ -1,11 +1,11 @@
 import apiClient from '@/services/apiClient';
+import { normalizeErrorMessage, useFeedback } from '@/composables/useFeedback';
 import type {
     River,
     RiverCreateResponse,
     RiverListResponse,
     RiverPayload,
 } from '@/types/rivers';
-import axios from 'axios';
 import { computed, reactive } from 'vue';
 
 interface RiversState {
@@ -23,6 +23,7 @@ const riversState = reactive<RiversState>({
 });
 
 export function useRivers() {
+    const { handleError, handleSuccess } = useFeedback();
     const rivers = computed(() => riversState.items);
     const loading = computed(() => riversState.loading);
     const creating = computed(() => riversState.creating);
@@ -36,27 +37,6 @@ export function useRivers() {
         riversState.errorMessage = '';
     }
 
-    function getErrorMessage(error: unknown, fallbackMessage: string) {
-        if (axios.isAxiosError(error)) {
-            const apiMessage = error.response?.data?.message;
-            const validationErrors = error.response?.data?.errors;
-
-            if (validationErrors && typeof validationErrors === 'object') {
-                const firstFieldErrors = Object.values(validationErrors)[0];
-
-                if (Array.isArray(firstFieldErrors) && typeof firstFieldErrors[0] === 'string') {
-                    return firstFieldErrors[0];
-                }
-            }
-
-            if (typeof apiMessage === 'string' && apiMessage.trim() !== '') {
-                return apiMessage;
-            }
-        }
-
-        return fallbackMessage;
-    }
-
     async function fetchRivers() {
         riversState.loading = true;
         riversState.errorMessage = '';
@@ -65,7 +45,7 @@ export function useRivers() {
             const response = await apiClient.get<RiverListResponse>('api/rivers');
             riversState.items = response.data.data.rivers;
         } catch (error) {
-            riversState.errorMessage = getErrorMessage(error, 'Nao foi possivel carregar os rios.');
+            riversState.errorMessage = normalizeErrorMessage(error, 'carregar os rios');
         } finally {
             riversState.loading = false;
         }
@@ -80,10 +60,11 @@ export function useRivers() {
 
             const response = await apiClient.post<RiverCreateResponse>('api/rivers', payload);
             riversState.items = [response.data.data.river, ...riversState.items];
+            handleSuccess('Rio cadastrado.');
 
             return response.data.data.river;
         } catch (error) {
-            riversState.errorMessage = getErrorMessage(error, 'Nao foi possivel cadastrar o rio.');
+            handleError(error, 'cadastrar o rio');
             throw error;
         } finally {
             riversState.creating = false;
@@ -101,10 +82,11 @@ export function useRivers() {
             riversState.items = riversState.items.map((river) =>
                 river.id === riverId ? response.data.data.river : river
             );
+            handleSuccess('Rio atualizado.');
 
             return response.data.data.river;
         } catch (error) {
-            riversState.errorMessage = getErrorMessage(error, 'Nao foi possivel atualizar o rio.');
+            handleError(error, 'atualizar o rio');
             throw error;
         } finally {
             riversState.creating = false;
@@ -119,8 +101,9 @@ export function useRivers() {
             await initializeCsrf();
             await apiClient.delete(`api/rivers/${riverId}`);
             riversState.items = riversState.items.filter((river) => river.id !== riverId);
+            handleSuccess('Rio excluído.');
         } catch (error) {
-            riversState.errorMessage = getErrorMessage(error, 'Nao foi possivel excluir o rio.');
+            handleError(error, 'excluir o rio');
             throw error;
         } finally {
             riversState.creating = false;

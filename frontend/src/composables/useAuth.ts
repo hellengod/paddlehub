@@ -1,4 +1,5 @@
 import apiClient from "@/services/apiClient";
+import { normalizeErrorMessage, useFeedback } from "@/composables/useFeedback";
 import { computed, reactive, ref } from "vue";
 import type { AuthState, CurrentUserResponse, LoginPayload, LoginResponse, LogoutResponse, RegisterPayload, RegisterResponse, User } from "@/types/auth";
 
@@ -10,6 +11,7 @@ const authState = reactive<AuthState>({
 let authRequest: Promise<boolean> | null = null;
 
 export function useAuth() {
+    const { handleError, handleSuccess } = useFeedback();
     const loading = ref(false);
     const status = computed(() => authState.status);
     const user = computed(() => authState.user);
@@ -63,8 +65,8 @@ export function useAuth() {
 
             setAuthenticated(response.data.data.user);
             return response.data;
-        } catch {
-            throw new Error("Nao foi possivel realizar o login")
+        } catch (error) {
+            throw new Error(normalizeErrorMessage(error, 'realizar o login'))
         } finally {
             loading.value = false
 
@@ -80,16 +82,22 @@ export function useAuth() {
         return syncAuthState();
     }
 
+    function handleUnauthorized() {
+        setGuest();
+    }
+
     async function logout(): Promise<LogoutResponse> {
         loading.value = true
 
         try {
             const response = await apiClient.post<LogoutResponse>('api/logout');
             setGuest();
+            handleSuccess('Sessão encerrada.');
             return response.data
 
-        } catch {
-            throw new Error("Nao foi possivel realizar o logout")
+        } catch (error) {
+            handleError(error, 'encerrar a sessão');
+            throw error
         } finally {
             loading.value = false
         }
@@ -109,9 +117,10 @@ export function useAuth() {
                 "password_confirmation": payload.passwordConfirmation
             });
 
+            handleSuccess('Conta criada. Agora você pode entrar.');
             return response.data;
-        } catch {
-            throw new Error("Nao foi possivel realizar o cadastro")
+        } catch (error) {
+            throw new Error(normalizeErrorMessage(error, 'realizar o cadastro'))
         } finally {
             loading.value = false
 
@@ -123,6 +132,7 @@ export function useAuth() {
         user,
         isAuthenticated,
         initializeAuth,
+        handleUnauthorized,
         login,
         logout,
         register,

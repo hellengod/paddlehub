@@ -5,13 +5,12 @@
         </div>
         <SidebarNavigation :items="menuItems"></SidebarNavigation>
 
-        <SidebarFooter :loading="loading" :errorMessage="errorMessage" @logout="handleLogout"></SidebarFooter>
+        <SidebarFooter :loading="loading" :error-message="null" @logout="handleLogout"></SidebarFooter>
 
     </aside>
 </template>
 <script setup lang="ts">
 import { useAuth } from '@/composables/useAuth';
-import { ref } from 'vue';
 import { useRouter } from 'vue-router'
 import HomeIcon from '@/components/atoms/icons/HomeIcon.vue';
 import MapIcon from '@/components/atoms/icons/MapIcon.vue';
@@ -21,7 +20,8 @@ import CommunityIcon from '@/components/atoms/icons/CommunityIcon.vue';
 import SidebarNavigation from '@/components/organisms/SidebarNavigation.vue';
 import SidebarFooter from '@/components/organisms/SidebarFooter.vue';
 
-const errorMessage = ref('');
+defineOptions({ name: 'AppSidebar' });
+
 const router = useRouter();
 const { logout, loading } = useAuth();
 
@@ -55,22 +55,12 @@ const menuItems = [
 ]
 
 async function handleLogout() {
-    errorMessage.value = '';
     try {
         await logout();
         void router.push({ name: 'login' });
-
+    } catch {
+        // useAuth apresenta a falha operacional no feedback global.
     }
-    catch (error) {
-
-        if (error instanceof Error) {
-            errorMessage.value = error.message
-        } else {
-            errorMessage.value = 'Nao foi possivel fazer logout'
-        }
-
-
-    } 
 
 }
 </script>
