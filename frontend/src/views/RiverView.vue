@@ -29,6 +29,7 @@
                     <div v-else class="river-list">
                         <RiverCard v-for="river in filteredRivers" :key="river.id" :river="river"
                             :is-favorite="favoriteIds.has(river.id)" :cover-src="getRiverCoverSrc(river.id)"
+                            :favorite-loading="wishlistLoading || pendingRiverIds.has(river.id)"
                             @toggle-favorite="toggleFavorite" @edit="openEditModal" @delete="openDeleteModal" />
                     </div>
                 </section>
@@ -39,33 +40,15 @@
             :difficulty-options="difficultyOptions" :river="editingRiver"
             @update:modelValue="handleCreateModalVisibilityChange" @submit="handleSaveRiver" />
 
-        <BaseModal :model-value="riverPendingDelete !== null" title="Excluir rio"
-            :description="riverPendingDelete ? `Voce esta excluindo ${riverPendingDelete.name}.` : ''" max-width="460px"
-            :close-on-backdrop="false" @update:modelValue="closeDeleteModal">
-            <p class="delete-confirmation-text">
-                Esta acao remove definitivamente o trecho cadastrado.
-            </p>
-            <p v-if="errorMessage" class="delete-confirmation-error" role="alert">{{ errorMessage }}</p>
-
-            <template #footer>
-                <BaseButton type="button" width="auto" min-height="40px" padding="0 16px" font-size="13px"
-                    border-width="1px" background-color="transparent" text-color="var(--color-text-primary)"
-                    border-color="var(--color-border-subtle)" label="Cancelar" @click="closeDeleteModal(false)" />
-                <BaseButton type="button" width="auto" min-height="40px" padding="0 16px" font-size="13px"
-                    border-width="1px" background-color="rgba(150, 35, 35, 0.72)" text-color="#fff"
-                    border-color="rgba(255, 115, 115, 0.42)" :disabled="creating"
-                    :label="creating ? 'Excluindo...' : 'Excluir rio'" @click="confirmDeleteRiver" />
-            </template>
-        </BaseModal>
     </section>
 </template>
 
 <script setup lang="ts">
-import BaseButton from '@/components/atoms/BaseButton.vue';
-import BaseModal from '@/components/atoms/BaseModal.vue';
 import RiverCard from '@/components/molecules/RiverCard.vue';
 import RiverCreateModal from '@/components/organisms/RiverCreateModal.vue';
 import RiverFiltersPanel from '@/components/organisms/RiverFiltersPanel.vue';
+import { useConfirmDialog } from '@/composables/useConfirmDialog';
+import { useRiverWishlist } from '@/composables/useRiverWishlist';
 import { useRivers } from '@/composables/useRivers';
 import type { River, RiverCatalogCard, RiverCatalogFilters, RiverCreateFormValues, RiverPayload } from '@/types/rivers';
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
@@ -74,10 +57,17 @@ const difficultyOptions = ['Classe I', 'Classe II', 'Classe III', 'Classe IV', '
 const ratingOptions = [1, 2, 3, 4, 5];
 
 const { rivers, loading, creating, errorMessage, fetchRivers, createRiver, updateRiver, deleteRiver, clearFeedback } = useRivers();
-const favoriteIds = ref<Set<number>>(new Set());
+const {
+    favoriteIds,
+    pendingRiverIds,
+    loading: wishlistLoading,
+    fetchWishlist,
+    toggleWishlist,
+    forgetRiver: forgetWishlistedRiver,
+} = useRiverWishlist();
+const { confirmDanger } = useConfirmDialog();
 const isCreateModalOpen = ref(false);
 const editingRiver = ref<River | null>(null);
-const riverPendingDelete = ref<River | null>(null);
 const localRiverCoverUrls = ref<Map<number, string>>(new Map());
 let createModalSession = 0;
 
@@ -127,18 +117,6 @@ const filteredRivers = computed(() =>
     })
 );
 
-function initializeFavorites(items: RiverCatalogCard[]) {
-    if (favoriteIds.value.size > 0 || items.length === 0) {
-        return;
-    }
-
-    const seedIds = items
-        .filter((_, index) => index === 0 || index === 1 || index === items.length - 1)
-        .map((river) => river.id);
-
-    favoriteIds.value = new Set(seedIds);
-}
-
 function handleApplyFilters(filters: RiverCatalogFilters) {
     activeFilters.search = filters.search;
     activeFilters.region = filters.region;
@@ -170,28 +148,20 @@ function handleCreateModalVisibilityChange(isOpen: boolean) {
     }
 }
 
-function openDeleteModal(river: River) {
-    clearFeedback();
-    riverPendingDelete.value = river;
-}
+async function openDeleteModal(river: River) {
+    const confirmed = await confirmDanger({
+        title: 'Excluir rio',
+        message: `O rio ${river.name} e o trecho cadastrado serão removidos definitivamente.`,
+        confirmLabel: 'Excluir',
+    });
 
-function closeDeleteModal(isOpen = false) {
-    if (!isOpen && !creating.value) {
-        riverPendingDelete.value = null;
-        clearFeedback();
+    if (confirmed) {
+        await removeRiver(river);
     }
 }
 
 function toggleFavorite(riverId: number) {
-    const nextFavorites = new Set(favoriteIds.value);
-
-    if (nextFavorites.has(riverId)) {
-        nextFavorites.delete(riverId);
-    } else {
-        nextFavorites.add(riverId);
-    }
-
-    favoriteIds.value = nextFavorites;
+    void toggleWishlist(riverId);
 }
 
 function getRiverCoverSrc(riverId: number) {
@@ -255,7 +225,6 @@ async function handleSaveRiver(formValues: RiverCreateFormValues) {
             : await createRiver(riverPayloadFromForm(formValues));
 
         setLocalRiverCover(savedRiver.id, formValues.coverImage);
-        initializeFavorites(riverCards.value);
         if (isCreateModalOpen.value && submissionSession === createModalSession) {
             handleCreateModalVisibilityChange(false);
         }
@@ -264,10 +233,8 @@ async function handleSaveRiver(formValues: RiverCreateFormValues) {
     }
 }
 
-async function confirmDeleteRiver() {
-    const river = riverPendingDelete.value;
-
-    if (!river || creating.value) {
+async function removeRiver(river: River) {
+    if (creating.value) {
         return;
     }
 
@@ -276,17 +243,14 @@ async function confirmDeleteRiver() {
     try {
         await deleteRiver(river.id);
         removeLocalRiverCover(river.id);
-        favoriteIds.value = new Set([...favoriteIds.value].filter((riverId) => riverId !== river.id));
-        riverPendingDelete.value = null;
+        forgetWishlistedRiver(river.id);
     } catch {
-        // O composable mantem a mensagem de erro para o modal.
+        // O composable de negócio apresenta o erro uma única vez.
     }
 }
 
 onMounted(() => {
-    void fetchRivers().then(() => {
-        initializeFavorites(riverCards.value);
-    });
+    void Promise.all([fetchRivers(), fetchWishlist()]);
 });
 
 onBeforeUnmount(() => {
@@ -319,18 +283,6 @@ onBeforeUnmount(() => {
 
 .results-panel {
     min-width: 0;
-}
-
-.delete-confirmation-text {
-    color: var(--color-text-secondary);
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-.delete-confirmation-error {
-    margin-top: 12px;
-    color: #ffd4d4;
-    font-size: 13px;
 }
 
 .results-header {

@@ -65,6 +65,7 @@ export interface RiverRecordData {
 
 export type RiverListResponse = ApiResponse<RiverListData>;
 export type RiverCreateResponse = ApiResponse<RiverRecordData>;
+export type RiverWishlistResponse = ApiResponse<RiverListData>;
 
 export interface RiverPayload {
     name: string;

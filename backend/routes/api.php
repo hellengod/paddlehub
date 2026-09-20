@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HydrographyController;
 use App\Http\Controllers\LocationSearchController;
 use App\Http\Controllers\RiverController;
+use App\Http\Controllers\RiverWishlistController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,12 @@ Route::post('/rivers', [RiverController::class, 'store'])
 Route::put('/rivers/{river}', [RiverController::class, 'update'])
     ->middleware('auth:sanctum');
 Route::delete('/rivers/{river}', [RiverController::class, 'destroy'])
+    ->middleware('auth:sanctum');
+Route::get('/wishlist/rivers', [RiverWishlistController::class, 'index'])
+    ->middleware('auth:sanctum');
+Route::post('/wishlist/rivers/{river}', [RiverWishlistController::class, 'store'])
+    ->middleware('auth:sanctum');
+Route::delete('/wishlist/rivers/{river}', [RiverWishlistController::class, 'destroy'])
     ->middleware('auth:sanctum');
 Route::get('/hydrography/ana', [HydrographyController::class, 'ana'])
     ->middleware('auth:sanctum');

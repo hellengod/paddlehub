@@ -21,7 +21,8 @@
                         border-color="rgba(255, 115, 115, 0.24)" label="Excluir"
                         @click="emit('delete', props.river)" />
                     <button type="button" class="favorite-button" :class="{ 'favorite-button--active': props.isFavorite }"
-                        :aria-label="favoriteButtonLabel" @click="emit('toggle-favorite', props.river.id)">
+                        :aria-label="favoriteButtonLabel" :disabled="props.favoriteLoading"
+                        @click="emit('toggle-favorite', props.river.id)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path
                                 d="m12 21-1.45-1.32C5.4 15.03 2 11.94 2 8.15 2 5.06 4.42 3 7.3 3c1.74 0 3.41.81 4.7 2.09C13.29 3.81 14.96 3 16.7 3 19.58 3 22 5.06 22 8.15c0 3.79-3.4 6.88-8.55 11.54z">
@@ -56,6 +57,7 @@ import { computed } from 'vue';
 interface RiverCardProps {
     river: RiverCatalogCard;
     isFavorite: boolean;
+    favoriteLoading?: boolean;
     coverSrc?: string;
 }
 
@@ -160,6 +162,11 @@ function formatExtensionKm(distance: number) {
 .favorite-button--active {
     color: var(--color-accent-primary);
     fill: currentColor;
+}
+
+.favorite-button:disabled {
+    cursor: wait;
+    opacity: 0.48;
 }
 
 .river-card-badges {
