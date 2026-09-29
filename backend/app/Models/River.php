@@ -145,9 +145,9 @@ class River extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function wishlistedByUsers(): BelongsToMany
+    public function paddlingListUsers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'river_wishlists')
+        return $this->belongsToMany(User::class, 'river_paddling_lists')
             ->withTimestamps();
     }
 }

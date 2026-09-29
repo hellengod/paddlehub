@@ -28,9 +28,9 @@
 
                     <div v-else class="river-list">
                         <RiverCard v-for="river in filteredRivers" :key="river.id" :river="river"
-                            :is-favorite="favoriteIds.has(river.id)" :cover-src="getRiverCoverSrc(river.id)"
-                            :favorite-loading="wishlistLoading || pendingRiverIds.has(river.id)"
-                            @toggle-favorite="toggleFavorite" @edit="openEditModal" @delete="openDeleteModal" />
+                            :is-in-paddling-list="paddlingListRiverIds.has(river.id)" :cover-src="getRiverCoverSrc(river.id)"
+                            :paddling-list-loading="paddlingListLoading || pendingRiverIds.has(river.id)"
+                            @toggle-paddling-list="togglePaddlingList" @edit="openEditModal" @delete="openDeleteModal" />
                     </div>
                 </section>
             </div>
@@ -48,7 +48,7 @@ import RiverCard from '@/components/molecules/RiverCard.vue';
 import RiverCreateModal from '@/components/organisms/RiverCreateModal.vue';
 import RiverFiltersPanel from '@/components/organisms/RiverFiltersPanel.vue';
 import { useConfirmDialog } from '@/composables/useConfirmDialog';
-import { useRiverWishlist } from '@/composables/useRiverWishlist';
+import { useRiverPaddlingList } from '@/composables/useRiverPaddlingList';
 import { useRivers } from '@/composables/useRivers';
 import type { River, RiverCatalogCard, RiverCatalogFilters, RiverCreateFormValues, RiverPayload } from '@/types/rivers';
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
@@ -58,13 +58,13 @@ const ratingOptions = [1, 2, 3, 4, 5];
 
 const { rivers, loading, creating, errorMessage, fetchRivers, createRiver, updateRiver, deleteRiver, clearFeedback } = useRivers();
 const {
-    favoriteIds,
+    paddlingListRiverIds,
     pendingRiverIds,
-    loading: wishlistLoading,
-    fetchWishlist,
-    toggleWishlist,
-    forgetRiver: forgetWishlistedRiver,
-} = useRiverWishlist();
+    loading: paddlingListLoading,
+    fetchPaddlingList,
+    togglePaddlingList,
+    forgetRiver: forgetPaddlingListRiver,
+} = useRiverPaddlingList();
 const { confirmDanger } = useConfirmDialog();
 const isCreateModalOpen = ref(false);
 const editingRiver = ref<River | null>(null);
@@ -160,10 +160,6 @@ async function openDeleteModal(river: River) {
     }
 }
 
-function toggleFavorite(riverId: number) {
-    void toggleWishlist(riverId);
-}
-
 function getRiverCoverSrc(riverId: number) {
     return localRiverCoverUrls.value.get(riverId);
 }
@@ -243,14 +239,14 @@ async function removeRiver(river: River) {
     try {
         await deleteRiver(river.id);
         removeLocalRiverCover(river.id);
-        forgetWishlistedRiver(river.id);
+        forgetPaddlingListRiver(river.id);
     } catch {
         // O composable de negócio apresenta o erro uma única vez.
     }
 }
 
 onMounted(() => {
-    void Promise.all([fetchRivers(), fetchWishlist()]);
+    void Promise.all([fetchRivers(), fetchPaddlingList()]);
 });
 
 onBeforeUnmount(() => {

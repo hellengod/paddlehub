@@ -52,9 +52,9 @@ class User extends Authenticatable
         ];
     }
 
-    public function wishlistRivers(): BelongsToMany
+    public function riversToPaddle(): BelongsToMany
     {
-        return $this->belongsToMany(River::class, 'river_wishlists')
+        return $this->belongsToMany(River::class, 'river_paddling_lists')
             ->withTimestamps();
     }
 }

@@ -8,18 +8,18 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class RiverWishlistController extends Controller
+class RiverPaddlingListController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
         $rivers = $request->user()
-            ->wishlistRivers()
+            ->riversToPaddle()
             ->with('creator:id,name')
             ->orderByPivot('created_at', 'desc')
             ->get();
 
         return response()->json([
-            'message' => 'Wishlist recuperada com sucesso',
+            'message' => 'Rios onde quero remar recuperados com sucesso',
             'data' => [
                 'rivers' => RiverResource::collection($rivers),
             ],
@@ -28,13 +28,13 @@ class RiverWishlistController extends Controller
 
     public function store(Request $request, River $river): JsonResponse
     {
-        $changes = $request->user()->wishlistRivers()->syncWithoutDetaching([$river->id]);
+        $changes = $request->user()->riversToPaddle()->syncWithoutDetaching([$river->id]);
         $wasAdded = count($changes['attached']) > 0;
 
         return response()->json([
             'message' => $wasAdded
-                ? 'Rio adicionado a wishlist'
-                : 'Rio ja estava na wishlist',
+                ? 'Rio adicionado aos rios onde quero remar'
+                : 'Rio ja estava nos rios onde quero remar',
             'data' => [
                 'riverId' => $river->id,
             ],
@@ -43,7 +43,7 @@ class RiverWishlistController extends Controller
 
     public function destroy(Request $request, River $river): Response
     {
-        $request->user()->wishlistRivers()->detach($river->id);
+        $request->user()->riversToPaddle()->detach($river->id);
 
         return response()->noContent();
     }

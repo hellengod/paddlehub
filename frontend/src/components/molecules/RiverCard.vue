@@ -20,9 +20,11 @@
                         border-width="1px" border-radius="7px" background-color="transparent" text-color="#ffb5b5"
                         border-color="rgba(255, 115, 115, 0.24)" label="Excluir"
                         @click="emit('delete', props.river)" />
-                    <button type="button" class="favorite-button" :class="{ 'favorite-button--active': props.isFavorite }"
-                        :aria-label="favoriteButtonLabel" :disabled="props.favoriteLoading"
-                        @click="emit('toggle-favorite', props.river.id)">
+                    <button type="button" class="paddling-list-button"
+                        :class="{ 'paddling-list-button--active': props.isInPaddlingList }"
+                        :aria-label="paddlingListButtonLabel" :title="paddlingListButtonLabel"
+                        :aria-pressed="props.isInPaddlingList" :disabled="props.paddlingListLoading"
+                        @click="emit('toggle-paddling-list', props.river.id)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path
                                 d="m12 21-1.45-1.32C5.4 15.03 2 11.94 2 8.15 2 5.06 4.42 3 7.3 3c1.74 0 3.41.81 4.7 2.09C13.29 3.81 14.96 3 16.7 3 19.58 3 22 5.06 22 8.15c0 3.79-3.4 6.88-8.55 11.54z">
@@ -56,20 +58,20 @@ import { computed } from 'vue';
 
 interface RiverCardProps {
     river: RiverCatalogCard;
-    isFavorite: boolean;
-    favoriteLoading?: boolean;
+    isInPaddlingList: boolean;
+    paddlingListLoading?: boolean;
     coverSrc?: string;
 }
 
 const props = defineProps<RiverCardProps>();
 const emit = defineEmits<{
-    (event: 'toggle-favorite', riverId: number): void;
+    (event: 'toggle-paddling-list', riverId: number): void;
     (event: 'edit', river: RiverCatalogCard): void;
     (event: 'delete', river: RiverCatalogCard): void;
 }>();
 
-const favoriteButtonLabel = computed(() =>
-    props.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'
+const paddlingListButtonLabel = computed(() =>
+    props.isInPaddlingList ? 'Remover de Rios onde quero remar' : 'Quero remar'
 );
 const coverSrc = computed(() => props.coverSrc || '/imagem-fundo5.png');
 const coverAlt = computed(() => props.coverSrc ? `Mapa do trecho ${props.river.name}` : '');
@@ -142,29 +144,34 @@ function formatExtensionKm(distance: number) {
     background: rgba(113, 24, 24, 0.22);
 }
 
-.favorite-button {
-    width: 18px;
-    height: 18px;
-    padding: 0;
+.paddling-list-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 5px;
     border: none;
+    border-radius: 50%;
     background: transparent;
     color: rgba(240, 248, 255, 0.7);
     cursor: pointer;
     flex-shrink: 0;
 }
 
-.favorite-button svg {
-    width: 100%;
-    height: 100%;
+.paddling-list-button svg {
+    width: 15px;
+    height: 15px;
     display: block;
 }
 
-.favorite-button--active {
+.paddling-list-button--active {
+    background: rgba(54, 201, 193, 0.14);
     color: var(--color-accent-primary);
     fill: currentColor;
 }
 
-.favorite-button:disabled {
+.paddling-list-button:disabled {
     cursor: wait;
     opacity: 0.48;
 }

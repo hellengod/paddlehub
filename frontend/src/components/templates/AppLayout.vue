@@ -13,7 +13,7 @@
 </template>
 <script setup lang="ts">
 import AppTopbar from '@/components/organisms/AppTopbar.vue';
-import Sidebar from '@/components/organisms/Sidebar.vue';
+import Sidebar from '@/components/organisms/SideBar.vue';
 </script>
 <style scoped>
 .layout-all {
