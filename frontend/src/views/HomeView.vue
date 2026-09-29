@@ -29,9 +29,15 @@ import BaseButton from '@/components/atoms/BaseButton.vue';
 </script>
 
 <style scoped>
+.container {
+    position: relative;
+    isolation: isolate;
+}
+
 .imagem-background {
     position: absolute;
     right: 0;
+    z-index: 0;
     width: calc(100vw - 350px);
     height: 450px;
     overflow: hidden;
@@ -60,6 +66,8 @@ import BaseButton from '@/components/atoms/BaseButton.vue';
 }
 
 .text-block {
+    position: relative;
+    z-index: 1;
     padding-top: 50px;
     padding-left: 50px;
     width: 450px;
@@ -86,6 +94,8 @@ p {
 }
 
 .actions {
+    position: relative;
+    z-index: 1;
     display: flex;
     padding-left: 50px;
     gap: 30px;
