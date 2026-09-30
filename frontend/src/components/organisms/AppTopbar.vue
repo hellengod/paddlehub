@@ -32,9 +32,14 @@ const avatarAlt = computed(() =>
 
 <style scoped>
 .topbar {
-    position: absolute;
-    top: var(--space-4);
-    right: var(--space-5);
+    display: flex;
+    flex: 0 0 64px;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    min-width: 0;
+    padding: 0 var(--space-5);
+    background: inherit;
     z-index: 10;
 }
 

@@ -275,15 +275,12 @@ onBeforeUnmount(() => {
 .profile-view {
     display: flex;
     width: 100%;
-    min-height: calc(100vh - 20px);
-    padding-left: 6px;
+    min-height: 100%;
 }
 
 .profile-panel {
     flex: 1;
-    border: 1px solid var(--color-border-panel);
-    border-radius: var(--radius-sm);
-    background: var(--color-bg-panel);
+    background: transparent;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -293,7 +290,7 @@ onBeforeUnmount(() => {
     position: sticky;
     top: 0;
     z-index: 2;
-    padding: var(--space-5) 112px var(--space-5) var(--space-5);
+    padding: var(--space-5);
     background: var(--color-bg-panel);
 }
 

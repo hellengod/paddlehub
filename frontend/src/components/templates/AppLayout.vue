@@ -17,7 +17,9 @@ import Sidebar from '@/components/organisms/SideBar.vue';
 </script>
 <style scoped>
 .layout-all {
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
     background: var(--color-bg-app);
     padding: 10px;
 }
@@ -26,18 +28,34 @@ import Sidebar from '@/components/organisms/SideBar.vue';
     display: flex;
     gap: 5px;
     width: 100%;
+    height: 100%;
     min-width: 0;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .main-shell {
+    display: flex;
     flex: 1;
-    min-width: 0;
+    flex-direction: column;
     position: relative;
-    min-height: calc(100vh - 20px);
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-panel);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-panel);
 }
 
 .main {
-    min-height: calc(100vh - 20px);
+    flex: 1;
+    width: 100%;
+    height: auto;
     min-width: 0;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: inherit;
 }
 </style>

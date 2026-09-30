@@ -257,16 +257,13 @@ onBeforeUnmount(() => {
 <style scoped>
 .river-view {
     width: 100%;
-    min-height: calc(100vh - 20px);
-    padding-left: 6px;
+    min-height: 100%;
 }
 
 .river-shell {
-    min-height: calc(100vh - 20px);
-    padding: 74px 12px 12px;
-    border: 1px solid var(--color-border-panel);
-    border-radius: var(--radius-sm);
-    background: linear-gradient(180deg, rgba(4, 16, 25, 0.98) 0%, rgba(3, 13, 21, 1) 100%);
+    min-height: 100%;
+    padding: 12px;
+    background: transparent;
     container-type: inline-size;
 }
 
@@ -316,10 +313,6 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 720px) {
-    .river-shell {
-        padding-top: 80px;
-    }
-
     .results-panel {
         padding: 0;
     }

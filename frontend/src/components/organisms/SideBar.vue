@@ -66,10 +66,14 @@ async function handleLogout() {
 </script>
 <style scoped>
 .sidebar {
-    width: 300px;
-    border: 1px solid var(--color-border-panel);
     display: flex;
+    flex: 0 0 300px;
     flex-direction: column;
+    width: 300px;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-panel);
     background-color: var(--color-bg-panel);
     border-radius: var(--radius-sm);
 }
