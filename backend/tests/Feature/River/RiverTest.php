@@ -3,6 +3,7 @@
 namespace Tests\Feature\River;
 
 use App\Models\River;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -174,7 +175,7 @@ class RiverTest extends TestCase
         $segments = 600;
         $dx = 4.3 / $segments;
         $dy = sqrt((7 / $segments) ** 2 - $dx ** 2);
-        $coordinates = array_map(fn (int $index): array => [
+        $coordinates = array_map(fn(int $index): array => [
             $index * $dx / $kmPerDegree,
             ($index % 2) * $dy / $kmPerDegree,
         ], range(0, $segments));
@@ -215,6 +216,95 @@ class RiverTest extends TestCase
             ]);
 
         $response->assertUnauthorized();
+    }
+
+    public function test_authenticated_user_can_paginate_rivers_using_cursor(): void
+    {
+        $this->authenticateUser();
+        try {
+            Carbon::setTestNow('2026-09-30 10:00:00');
+            $responseA = $this
+                ->withHeader('Origin', config('app.url'))
+                ->postJson('/api/rivers', [
+                    'name' => 'Rio Paraibuna',
+                    'city' => 'Juiz de Fora',
+                    'state' => 'mg',
+                    'difficulty_class' => 'Classe III',
+                    'description' => 'Trecho inicial mapeado para a primeira versao do cadastro.',
+                    'extension_km' => 12.7,
+                    'start_latitude' => -21.7642,
+                    'start_longitude' => -43.3496,
+                    'end_latitude' => -21.8012,
+                    'end_longitude' => -43.4123,
+                    'route_coordinates' => [
+                        [-43.3496, -21.7642],
+                        [-43.37, -21.79],
+                        [-43.4123, -21.8012],
+                    ],
+                ]);
+            $responseA->assertCreated();
+            $riverAId = $responseA->json('data.river.id');
+
+            Carbon::setTestNow('2026-09-30 10:01:00');
+            $responseB = $this
+                ->withHeader('Origin', config('app.url'))
+                ->postJson('/api/rivers', [
+                    'name' => 'Rio Paraibuna 2',
+                    'city' => 'Juiz de Fora',
+                    'state' => 'mg',
+                    'difficulty_class' => 'Classe III',
+                    'description' => 'Trecho inicial mapeado para a primeira versao do cadastro.',
+                    'extension_km' => 12.7,
+                    'start_latitude' => -21.7642,
+                    'start_longitude' => -43.3496,
+                    'end_latitude' => -21.8012,
+                    'end_longitude' => -43.4123,
+                    'route_coordinates' => [
+                        [-43.3496, -21.7642],
+                        [-43.37, -21.79],
+                        [-43.4123, -21.8012],
+                    ],
+                ]);
+            $responseB->assertCreated();
+            $riverBId = $responseB->json('data.river.id');
+
+            Carbon::setTestNow('2026-09-30 10:02:00');
+
+            $responseC = $this
+                ->withHeader('Origin', config('app.url'))
+                ->postJson('/api/rivers', [
+                    'name' => 'Rio Paraibuna 3',
+                    'city' => 'Juiz de Fora',
+                    'state' => 'mg',
+                    'difficulty_class' => 'Classe III',
+                    'description' => 'Trecho inicial mapeado para a primeira versao do cadastro.',
+                    'extension_km' => 12.7,
+                    'start_latitude' => -21.7642,
+                    'start_longitude' => -43.3496,
+                    'end_latitude' => -21.8012,
+                    'end_longitude' => -43.4123,
+                    'route_coordinates' => [
+                        [-43.3496, -21.7642],
+                        [-43.37, -21.79],
+                        [-43.4123, -21.8012],
+                    ],
+                ]);
+            $responseC->assertCreated();
+            $riverCId = $responseC->json('data.river.id');
+
+        } finally {
+            Carbon::setTestNow();
+        }
+
+        $firstPage = $this
+            ->withHeader('Origin', config('app.url'))
+            ->getJson('/api/rivers?limit=2');
+
+        $firstPage->assertStatus(200);
+        $firstPage->assertJsonCount(2, 'data.rivers');
+        $firstPage->assertJsonPath('data.rivers.0.id', $riverCId);
+        $firstPage->assertJsonPath('data.rivers.1.id', $riverBId);
+
     }
 
     public function test_store_validates_required_fields(): void
