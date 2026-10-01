@@ -11,7 +11,7 @@ class IndexRiverRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user() !== null;
     }
 
     /**
@@ -22,7 +22,8 @@ class IndexRiverRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'limit' => ['nullable', 'integer', 'between:1,50'],
+            'cursor' => ['nullable', 'string'],
         ];
     }
 }

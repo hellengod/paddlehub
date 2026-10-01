@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\River\IndexRiverRequest;
 use App\Http\Requests\River\StoreRiverRequest;
 use App\Http\Requests\River\UpdateRiverRequest;
 use App\Http\Resources\RiverResource;
@@ -11,12 +12,14 @@ use Illuminate\Http\Response;
 
 class RiverController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(IndexRiverRequest $request): JsonResponse
     {
+        $limit = $request->integer('limit', 12);
         $rivers = River::query()
             ->with('creator:id,name')
-            ->latest()
-            ->get();
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->cursorPaginate($limit);
 
         return response()->json([
             'message' => 'Rios recuperados com sucesso',
